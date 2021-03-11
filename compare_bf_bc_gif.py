@@ -31,13 +31,13 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/000019_wp.npy',
+    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/000335_wp.npy',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-o', '--output_dir', type=str,
                         default='./docs/results/gif',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-m', '--image_path', type=str,
-                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/000019_w_doublechin.jpg',
+                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/000335_w_doublechin.jpg',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('--boundary_path1', type=str,
                         default='./interface/boundaries/fine/all/boundary.npy',
@@ -53,7 +53,7 @@ def parse_args():
     parser.add_argument('--boundary_begin_ratio', type=float, default=0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--boundary_end_ratio', type=float, default=-6.0,
+    parser.add_argument('--boundary_end_ratio', type=float, default=-5.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
     parser.add_argument('--step_num', type=int, default=30,
