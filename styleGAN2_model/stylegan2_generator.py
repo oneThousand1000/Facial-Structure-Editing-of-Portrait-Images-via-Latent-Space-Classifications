@@ -33,10 +33,10 @@ class StyleGAN2Generator(BaseGenerator):
     (3) W+ space, with dimension (18, 512)
     """
 
-    def __init__(self, model_name, logger=None,truncation_psi=0.5):
+    def __init__(self, model_name, logger=None,truncation_psi=0.5,randomize_noise=False):
         self.truncation_psi = truncation_psi
         self.truncation_layers = model_settings.STYLEGAN_TRUNCATION_LAYERS
-        self.randomize_noise = model_settings.STYLEGAN_RANDOMIZE_NOISE
+        self.randomize_noise = randomize_noise
         self.model_specific_vars = ['truncation.truncation']
         super().__init__(model_name, logger)
         self.num_layers = (int(np.log2(self.resolution)) - 1) * 2
@@ -47,7 +47,7 @@ class StyleGAN2Generator(BaseGenerator):
     def load(self):
         self.logger.info(f'Loading pytorch model from `{self.model_path}`.')
         print(f'Loading pytorch model from `{self.model_path}`.')
-        self.model = models.load(self.model_path)
+        self.model = models.load(self.model_path,randomize_noise=self.randomize_noise)
         self.model.eval().to(self.run_device)
         self.model.set_truncation(truncation_psi=self.truncation_psi)
 

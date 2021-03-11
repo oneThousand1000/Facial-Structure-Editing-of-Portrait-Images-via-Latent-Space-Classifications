@@ -157,7 +157,7 @@ class _BaseModel(nn.Module):
         torch.save(self._serialize(half=half), fpath)
 
 
-def _deserialize(state):
+def _deserialize(state,randomize_noise=False):
     """
     Load a model from its serialized state.
     Arguments:
@@ -174,13 +174,16 @@ def _deserialize(state):
     # Assume every other entry in the state is a serialized
     # keyword argument.
     for key in list(state.keys()):
+
         kwargs[key] = _deserialize(state.pop(key))
+
+    kwargs['randomize_noise']=randomize_noise
     model = globals()[name](**kwargs)
     model._set_state_dict(state_dict)
     return model
 
 
-def load(fpath, map_location='cpu'):
+def load(fpath, map_location='cpu',randomize_noise=False):
     """
     Load a model.
     Arguments:
@@ -193,8 +196,8 @@ def load(fpath, map_location='cpu'):
     """
     if map_location is not None:
         map_location = torch.device(map_location)
-    torch.load(fpath, map_location=map_location)
-    return _deserialize(torch.load(fpath, map_location=map_location))
+    #torch.load(fpath, map_location=map_location)
+    return _deserialize(torch.load(fpath, map_location=map_location),randomize_noise)
 
 
 def save(model, fpath, half=False):
@@ -238,8 +241,9 @@ class Generator(_BaseModel):
         self.G_mapping = G_mapping
         self.G_synthesis = G_synthesis
         # use the static noise
-        print('use the static noise')
-        self.static_noise()
+        if not self.randomize_noise:
+            print('use the static noise')
+            self.static_noise()
         self.register_buffer('dlatent_avg', torch.zeros(self.G_mapping.latent_size))
         self.set_truncation()
         self.num_latents = 1
