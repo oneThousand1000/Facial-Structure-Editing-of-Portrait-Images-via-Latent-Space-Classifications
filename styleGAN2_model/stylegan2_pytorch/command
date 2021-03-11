@@ -1,0 +1,2 @@
+python run_convert_from_tf.py --input=stylegan2-ffhq-config-f.pkl --output G.pth D.pth Gs.pth
+python run_generator.py generate_images --network=Gs.pth --seeds=6600-6625 --truncation_psi=0.5

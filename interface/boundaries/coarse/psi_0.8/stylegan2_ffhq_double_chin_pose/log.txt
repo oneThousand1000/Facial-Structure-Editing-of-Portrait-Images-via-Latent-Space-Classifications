@@ -1,0 +1,12 @@
+[2021-01-22 16:16:44,773][INFO] Loading latent codes.
+[2021-01-22 16:16:44,780][INFO] Loading attribute scores.
+[2021-01-22 16:16:44,780][INFO] Filtering training data.
+[2021-01-22 16:16:44,780][INFO] Sorting scores to get positive and negative samples.
+[2021-01-22 16:16:44,784][INFO] Spliting training and validation sets:
+[2021-01-22 16:16:44,788][INFO]   Training: 1614 positive, 1614 negative.
+[2021-01-22 16:16:44,788][INFO]   Validation: 33 positive, 33 negative.
+[2021-01-22 16:16:44,788][INFO]   Remaining: 825 positive, 0 negative.
+[2021-01-22 16:16:44,789][INFO] Training boundary.
+[2021-01-22 16:16:46,714][INFO] Finish training.
+[2021-01-22 16:16:46,731][INFO] Accuracy for validation set: 60 / 66 = 0.909091
+[2021-01-22 16:16:46,932][INFO] Accuracy for remaining set: 437 / 825 = 0.529697
