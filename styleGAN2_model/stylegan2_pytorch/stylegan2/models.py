@@ -244,6 +244,8 @@ class Generator(_BaseModel):
         if not self.randomize_noise:
             print('use the static noise')
             self.static_noise()
+        else:
+            print('use the random noise')
         self.register_buffer('dlatent_avg', torch.zeros(self.G_mapping.latent_size))
         self.set_truncation()
         self.num_latents = 1

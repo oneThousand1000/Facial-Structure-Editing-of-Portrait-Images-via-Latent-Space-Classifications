@@ -2,15 +2,12 @@ import os
 import numpy as np
 import  glob
 import cv2
-# from .pyDelaunay2D.delaunay2D import Delaunay2D
 from scipy.spatial import Delaunay
 
 
 
 '''
-
 https://github.com/spmallick/learnopencv
-
 '''
 
 def applyAffineTransform(src, srcTri, dstTri, size):
@@ -72,137 +69,12 @@ def data_load():
             img_list.append((img1,img2,mask))
     return img_list
 
-#
-# tris=[
-#     [0,1,8],
-#     [1,8,9],
-#     [1,9,10],
-#     [1,10,11],
-#     [1,11,12],
-#     [1,12,13],
-#     [1,13,14],
-#     [1,14,15],
-#     [1,2,15],
-#     [2,15,3],
-#     [3,4,15],
-#     [4,14,15],
-#     [4,13,14],
-#     [4,12,13],
-#     [4,5,12],
-#     [5,11,12],
-#     [5,6,11],
-#     [6,11,10],
-#     [6,9,10],
-#     [6,8,9],
-#     [6,7,8],
-#     [0,7,8],
-# ]
 
 
-# def warp(img,points,translations):
-#     #translations 6*2
-#
-#     img = img.astype(np.uint8)
-#     imgMorph = np.zeros(img.shape, dtype=img.dtype)
-#     w = img.shape[0]
-#     h = img.shape[1]
-#     print(translations)
-#     points1 = [
-#         (0, 0),
-#         (int(w / 2), 0),
-#         (w - 1, 0),
-#         (w - 1, int(h / 2)),
-#         (w - 1, h - 1),
-#         (int(w / 2), h - 1),
-#         (0, h - 1),
-#         (0, int(h / 2)),
-#         (points[0][0], points[0][1]),
-#         (points[1][0], points[1][1]),
-#         (points[2][0], points[2][1]),
-#         (points[3][0], points[3][1]),
-#         (points[4][0], points[4][1]),
-#         (points[5][0], points[5][1]),
-#         (points[6][0], points[6][1]),
-#         (points[7][0], points[7][1])
-#
-#     ]
-#     # can1=img.copy()
-#     # for i,point in enumerate(points1):
-#     #     cv2.putText(can1, str(i), (point[0], point[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 5)
-#     #     cv2.circle(can1,(point[0],point[1]),radius=25,color=(255,0,0))
-#     #
-#     # cv2.imshow('i', cv2.resize(can1, (512, 512)))
-#     # cv2.waitKey(0)
-#     # print('===================================')
-#     points2 = [
-#         (0, 0),
-#         (int(w / 2), 0),
-#         (w - 1, 0),
-#         (w - 1, int(h / 2)),
-#         (w - 1, h - 1),
-#         (int(w / 2), h - 1),
-#         (0, h - 1),
-#         (0, int(h / 2)),
-#         (points[0][0] + translations[0][0], points[0][1]+ translations[0][1]),
-#         (points[1][0] + translations[1][0], points[1][1]+ translations[1][1]),
-#         (points[2][0] + translations[2][0], points[2][1]+ translations[2][1]),
-#         (points[3][0]+ translations[3][0], points[3][1]+ translations[3][1]),
-#         (points[4][0]+ translations[4][0], points[4][1]+ translations[4][1]),
-#         (points[5][0]+ translations[5][0], points[5][1]+ translations[5][1]),
-#         (points[6][0] + translations[6][0], points[6][1] + translations[6][1]),
-#         (points[7][0] + translations[7][0], points[7][1] + translations[7][1])
-#     ]
-#     # can2 = img.copy()
-#     # for point in points1:
-#     #     cv2.circle(can2, (point[0], point[1]), radius=25, color=(255, 0, 0))
-#     #
-#     # cv2.imshow('i', cv2.resize(can2, (512, 512)))
-#     # cv2.waitKey(0)
-#     # print(points2)
-#     # print('===================================')
-#     points = []
-#
-#     alpha = 0.5
-#     for i in range(0, len(points1)):
-#         x = (1 - alpha) * points1[i][0] + alpha * points2[i][0]
-#         y = (1 - alpha) * points1[i][1] + alpha * points2[i][1]
-#         points.append((x, y))
-#
-#
-#     # Read triangles from tri.txt
-#     for tri in tris:
-#         x, y, z = tri
-#
-#         t1 = [points1[x], points1[y], points1[z]]
-#         t2 = [points2[x], points2[y], points2[z]]
-#         t = [points[x], points[y], points[z]]
-#
-#         # Morph one triangle at a time.
-#         morphTriangle(img, img.copy(), imgMorph, t1, t2, t, alpha)
-#
-#     return imgMorph
+
 
 def get_tris(points,w,h,sample_num=4):
-    # #print("points_pair_num:",points_pair_num)
-    # tris = []
-    # tris.append([0,1,7])
-    # tris.append([1,2,3])
-    # tris.append([4,5,8+points_pair_num])
-    # tris.append([5,6,7+points_pair_num])
-    # tris.append([5,8+points_pair_num, 7 + points_pair_num])
-    # tris.append([1, 8 + points_pair_num, 7 + points_pair_num])
-    # for i in range(7,7+points_pair_num):
-    #     tris.append([i,i+1,1])
-    #     tris.append([i, i + 1, 6])
-    # for i in range(8 + points_pair_num,8 + points_pair_num*2):
-    #     if i!= 8 + points_pair_num*2-1:
-    #         tris.append([i, i + 1, 1])
-    #         tris.append([i, i + 1, 4])
-    #     else:
-    #         tris.append([i, 3, 1])
-    #         tris.append([i, 3, 4])
-    # assert len(tris)==6+points_pair_num*4
-    # return tris
+
 
     seeds = [
             (0, 0),
@@ -215,10 +87,6 @@ def get_tris(points,w,h,sample_num=4):
             (0, int(h / 2))
 
         ]
-
-    # for i in range(1,sample_num):
-    #     for j in range(1,sample_num):
-    #         seeds.append((w/sample_num*i,h/sample_num*j))
 
     '''
     reference: 
@@ -236,17 +104,6 @@ def get_tris(points,w,h,sample_num=4):
 
     seeds = np.array(seeds)
 
-    # dt = Delaunay2D()
-    #
-    # for s in seeds:
-    #     dt.addPoint(s)
-    #
-    #
-    # for s in points:
-    #     dt.addPoint(s)
-    #
-    #
-    # seeds= seeds.astype(np.uint32)
     points= np. concatenate([seeds,points],axis=0)
     delaunay = Delaunay(points)
     return delaunay,seeds

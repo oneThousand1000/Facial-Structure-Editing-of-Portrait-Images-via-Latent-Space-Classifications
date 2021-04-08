@@ -42,7 +42,7 @@ def parse_args():
                              'Style GAN. (default: generate images)')
     parser.add_argument('-p', '--truncation_psi', type=float,default='0.8')
     parser.add_argument("--double_chin_only", type=str2bool, nargs='?',
-                        const=False, default=False,
+                        const=True, default=True,
                         help="Only generate double chin images.")
 
     return parser.parse_args()

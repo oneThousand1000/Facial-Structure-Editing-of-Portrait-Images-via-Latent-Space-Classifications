@@ -21,12 +21,13 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_select',
+    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_select -intercept',
                         help='If specified, will load latent codes from given ')
 
     parser.add_argument('-b', '--boundary_path', type=str,
-                        default='./interface/boundaries/fine/all/boundary.npy',
+                        default='./interface/boundaries/fine/all_',
                         help='Path to the semantic boundary. (required)')
+
 
     parser.add_argument('--boundary_init_ratio', type=float, default=-10.0,
                         help='End point for manipulation in latent space. '
@@ -77,9 +78,14 @@ def run():
     kwargs = {'latent_space_type': latent_space_type}
 
     print(f'Preparing boundary.')
-    if not os.path.isfile(args.boundary_path):
-        raise ValueError(f'Boundary `{args.boundary_path}` does not exist!')
-    boundary = np.load(args.boundary_path)
+    boundary_path=os.path.join(args.boundary_path,'boundary.npy')
+    intercept_path = os.path.join(args.boundary_path, 'intercept.npy')
+    if not os.path.isfile(boundary_path):
+        raise ValueError(f'Boundary `{boundary_path}` does not exist!')
+    if not os.path.isfile(intercept_path):
+        raise ValueError(f'Boundary `{intercept_path}` does not exist!')
+    boundary = np.load(boundary_path)
+    intercept = np.load(intercept_path)
 
     print(f'Load latent codes and images from `{args.data_dir}`.')
     latent_codes = []
@@ -111,7 +117,20 @@ def run():
 
             wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
             origin_img = cv2.imread(origin_img_list[img_index])
-            edited_wps_latent = wps_latent + args.boundary_init_ratio * boundary
+            #print(np.linalg.norm(boundary,axis=2,keepdims=True).shape)
+            distance =np.abs((np.sum(boundary * wps_latent,axis=2,keepdims=True)+intercept)/np.linalg.norm(boundary,axis=2,keepdims=True))*(-1.8)
+            print(distance)
+
+            # print(intercept.shape)
+            # distance=[]
+            # for index in range(18):
+            #     distance.append(np.abs((np.sum(boundary[:,index,:] * wps_latent[:,index,:])+intercept[index])/np.linalg.norm(boundary[:,index,:]))*(-1.6))
+            #
+            # distance=np.reshape(np.array(distance),(1,18,1))
+            # print(distance)
+
+
+            edited_wps_latent = wps_latent + distance * boundary
             origin_encode = model.easy_synthesize(wps_latent,
                                                   **kwargs)
             origin_encode = origin_encode['image'][0][:, :, ::-1]
@@ -155,7 +174,7 @@ def run():
             else:
                 cv2.imwrite(os.path.join(res_dir, f'{image_name}.jpg'), res)
                 cv2.imwrite(os.path.join(temp_dir, f'{image_name}.jpg'),
-                            np.concatenate([origin_img,  res], axis=0))
+                            np.concatenate([origin_img,  res], axis=1))
             times.append([time_edit, time_mask, time_warp])
             img_count += 1
         except:

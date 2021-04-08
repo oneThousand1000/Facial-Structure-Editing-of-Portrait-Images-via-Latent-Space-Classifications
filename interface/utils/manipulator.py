@@ -14,7 +14,8 @@ def train_boundary(latent_codes,
                    chosen_num_or_ratio=0.02,
                    split_ratio=0.7,
                    invalid_value=None,
-                   logger=None):
+                   logger=None,
+                   return_intercept=False):
     """Trains boundary in latent space with offline predicted attribute scores.
 
     Given a collection of latent codes and the attribute scores predicted from the
@@ -139,7 +140,10 @@ def train_boundary(latent_codes,
                     f'{correct_num / remaining_num:.6f}')
 
     a = classifier.coef_.reshape(1, latent_space_dim).astype(np.float32)
-    return a / np.linalg.norm(a)
+    if return_intercept:
+        return a / np.linalg.norm(a),classifier.intercept_
+    else:
+        return a / np.linalg.norm(a)
 
 
 def project_boundary(primal, *args):

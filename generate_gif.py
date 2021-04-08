@@ -16,6 +16,7 @@ put original real images in $PATH/origin, named `{name}.jpg`,
 the corresponding wp latent code should be put in $PATH/code,
 named `{name}_wp.npy`.
 '''
+import imageio
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -30,27 +31,32 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/007249_wp.npy',
+    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/000241_wp.npy',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-o', '--output_dir', type=str,
-                        default='./docs/results/1',
+                        default='./docs/',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-m', '--image_path', type=str,
-                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/007249_w_doublechin.jpg',
+                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/000241_w_doublechin.jpg',
                         help='If specified, will load latent codes from given ')
-    parser.add_argument('-b', '--boundary_path', type=str,
-                        default='./interface/boundaries/fine/psi_0.8/boundary.npy',
+    parser.add_argument('--boundary_path1', type=str,
+                        default='./interface/boundaries/fine/all/boundary.npy',
                         help='Path to the semantic boundary. (required)')
+    parser.add_argument('--boundary_path2', type=str,
+                        default='./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_w/boundary.npy',
+                        help='Path to the semantic boundary. (required)')
+
+
     parser.add_argument('-s', '--latent_space_type', type=str, default='wp',
                         choices=['z', 'Z', 'w', 'W', 'wp', 'wP', 'Wp', 'WP'],
                         help='Latent space used in Style GAN. (default: `Z`)')
     parser.add_argument('--boundary_begin_ratio', type=float, default=0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--boundary_end_ratio', type=float, default=-6.0,
+    parser.add_argument('--boundary_end_ratio', type=float, default=-5.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--step_num', type=int, default=5,
+    parser.add_argument('--step_num', type=int, default=30,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
     return parser.parse_args()
@@ -70,18 +76,17 @@ def run():
 
 
     print(f'Initializing generator.')
-    model = StyleGAN2Generator(model_name, logger=None,randomize_noise=True)
+    model = StyleGAN2Generator(model_name, logger=None)
     kwargs = {'latent_space_type': latent_space_type}
 
 
 
     print(f'Preparing boundary.')
-    if not os.path.isfile(args.boundary_path):
-        raise ValueError(f'Boundary `{args.boundary_path}` does not exist!')
-    boundary = np.load(args.boundary_path)
+
+    boundary_f = np.load(args.boundary_path1)
+    boundary_c = np.load(args.boundary_path2)
 
 
-    neckMaskNet = get_parsingNet()
 
     pbar=tqdm(total=args.step_num)
 
@@ -89,31 +94,28 @@ def run():
 
 
     wps_latent = np.reshape(np.load(args.latent_path), (1, 18, 512))
-    origin_img = cv2.imread(args.image_path)
-    mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
-    res_imgs=[]
+    res_imgs_f=[]
     for step in range(args.step_num+1):
         pbar.update(1)
-        edited_wps_latent = wps_latent + (args.boundary_end_ratio-args.boundary_begin_ratio)/args.step_num*step*boundary
-
-        edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
+        edited_wps_latent_f = wps_latent + (args.boundary_end_ratio-args.boundary_begin_ratio)/args.step_num*step*boundary_f
+        edited_output_f = model.easy_style_mixing(latent_codes=edited_wps_latent_f,
                                                 style_range=range(6, 18),
                                                 style_codes=wps_latent,
                                                 mix_ratio=1.0, **kwargs)
 
-        edited_img = edited_output['image'][0][:, :, ::-1]
+        edited_img_f = edited_output_f['image'][0]#[:, :, ::-1]
 
-        warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
-        #res .append(warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255))
-        res= warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255)
-        #save_path=os.path.join(args.output_dir, f'{image_name}_step{step}.jpg')
-        res_imgs.append(res)
+
+
+        res_imgs_f.append(edited_img_f)
         #cv2.imwrite(save_path,res)
 
 
-    cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_step{step}_fixed.jpg'),np.concatenate(res_imgs,axis=1))
+    # cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_bf.jpg'),np.concatenate(res_imgs_f,axis=1))
+    # cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_bc.jpg'), np.concatenate(res_imgs_c, axis=1))
     #cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_temp.jpg'), np.concatenate(temp, axis=1))
-    #imageio.mimsave(os.path.join(args.output_dir, f'{image_name}.gif'), res_imgs, 'GIF', duration=0.3)
+    print('save to ',os.path.join(args.output_dir, f'{image_name}.gif'))
+    imageio.mimsave(os.path.join(args.output_dir, f'{image_name}.gif'), res_imgs_f, 'GIF', duration=0.3)
 
 
 if __name__ == '__main__':

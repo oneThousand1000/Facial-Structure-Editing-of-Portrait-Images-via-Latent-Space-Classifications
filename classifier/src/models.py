@@ -58,7 +58,7 @@ class ClassificationModel(nn.Module):
 
     def load(self):
         if os.path.exists(self.weights_path):
-            print('Loading %s generator...' % self.name)
+            print('Loading %s generator from %s...' % (self.name,self.weights_path))
 
             if torch.cuda.is_available():
                 data = torch.load(self.weights_path)

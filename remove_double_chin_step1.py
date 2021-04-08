@@ -100,8 +100,7 @@ def run():
     parsingNet=get_parsingNet()
     image_name = ['w_doublechin', 'wo_doublechin']
     for sample_id in tqdm(range(total_num), leave=False):
-        zs_latent=latent_codes[sample_id:sample_id + 1]
-        latent=zs_latent
+        latent=latent_codes[sample_id:sample_id + 1]
         interpolations=np.concatenate([latent,latent+boundary*args.ratio],axis=0)
 
         interpolation_id = 0

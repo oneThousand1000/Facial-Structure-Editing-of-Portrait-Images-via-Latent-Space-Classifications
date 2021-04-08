@@ -86,6 +86,7 @@ def diffuse(args, img_path, mask_path, latent_path,inverter=None):
     save_image(image_save_path, viz_result)
 
     image_masked_save_path = os.path.join(os.path.join(args.data_dir, 'res'), '%s.jpg' % image_name)
+    image_optimized_save_path = os.path.join(os.path.join(args.data_dir, 'viz'), '%s_op.jpg' % image_name)
     res = viz_result
     #
     origin_img = resize_image(
@@ -93,6 +94,7 @@ def diffuse(args, img_path, mask_path, latent_path,inverter=None):
         (image_size, image_size))
     #
     #
+    save_image(image_optimized_save_path, res)
     res = origin_img * (1 - mask_dilate_blur / 255) + res * (mask_dilate_blur / 255)
     save_image(image_masked_save_path, res)
     #

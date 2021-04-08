@@ -28,11 +28,11 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Train semantic boundary with given latent codes and '
                     'attribute scores.')
-    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/fine/double_chin_wp_all',
+    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/fine/all_',
                         help='Directory to save the output results. (required)')
-    parser.add_argument('-c', '--latent_codes_path', type=str, default='./data/wps_all.npy',
+    parser.add_argument('-c', '--latent_codes_path', type=str, default='./fine_boundary_train_data/wps_all.npy',
                         help='Path to the input latent codes. (required)')
-    parser.add_argument('-s', '--scores_path', type=str, default='./data/score_all.npy',
+    parser.add_argument('-s', '--scores_path', type=str, default='./fine_boundary_train_data/scores_all.npy',
                         help='Path to the input attribute scores. (required)')
     parser.add_argument('-n', '--chosen_num_or_ratio', type=float, default=0.49,
                         help='How many samples to choose for training. '
@@ -57,18 +57,21 @@ def main():
     scores=np.reshape(scores,(scores.shape[0],1))
     print("scores dim:", scores.shape)
     boundarys=[]
+    intercepts=[]
     for i in range(18):
 
         latent_codes = np.reshape(latent_codes_all[:,i,:], (latent_codes_all.shape[0], 512))
 
 
         print("latent_space_dim:", latent_codes.shape)
-        boundary = train_boundary(latent_codes=latent_codes,
+        boundary,intercept = train_boundary(latent_codes=latent_codes,
                                   scores=scores,
                                   chosen_num_or_ratio=args.chosen_num_or_ratio,
                                   split_ratio=args.split_ratio,
                                   invalid_value=args.invalid_value,
-                                  logger=logger)
+                                  logger=logger,
+                                  return_intercept=True)
+        intercepts.append(intercept)
         print(boundary.shape)
         np.save(os.path.join(args.output_dir, f'boundary_{i}.npy'), boundary)
 
@@ -76,8 +79,8 @@ def main():
 
     boundarys = np.concatenate(boundarys, axis=1)
     boundarys = np.reshape(boundarys, (1, 18, 512))
-
     np.save(os.path.join(args.output_dir, f'boundary.npy'), boundarys)
+    np.save(os.path.join(args.output_dir, f'intercept.npy'), np.array(intercepts))
 
 
 
