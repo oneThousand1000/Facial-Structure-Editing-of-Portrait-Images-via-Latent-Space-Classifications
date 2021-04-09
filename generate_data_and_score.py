@@ -16,6 +16,7 @@ import numpy as np
 from tqdm import tqdm
 
 from styleGAN2_model.stylegan2_generator import StyleGAN2Generator
+from styleGAN2_ada_model.stylegan2_ada_generator import StyleGAN2adaGenerator
 from interface.utils.logger import setup_logger
 from classifier.classify import get_model,check_double_chin
 from utils import str2bool
@@ -30,7 +31,7 @@ def parse_args():
     parser.add_argument('-i', '--latent_codes_path', type=str, default='',
                         help='If specified, will load latent codes from given '
                              'path instead of randomly sampling. (optional)')
-    parser.add_argument('-n', '--num', type=int, default=50000,
+    parser.add_argument('-n', '--num', type=int, default=100,
                         help='Number of images to generate. This field will be '
                              'ignored if `latent_codes_path` is specified. '
                              '(default: 1)')
@@ -41,8 +42,9 @@ def parse_args():
                         help='If specified, will skip generating images in '
                              'Style GAN. (default: generate images)')
     parser.add_argument('-p', '--truncation_psi', type=float,default='0.8')
+    parser.add_argument('-m', '--model', type=str, default='stylegan2_ada')
     parser.add_argument("--double_chin_only", type=str2bool, nargs='?',
-                        const=True, default=True,
+                        const=False, default=False,
                         help="Only generate double chin images.")
 
     return parser.parse_args()
@@ -51,14 +53,17 @@ def parse_args():
 def main():
     """Main function."""
     args = parse_args()
-    model_name='stylegan2_ffhq'
+    model_name=args.model
     logger = setup_logger(args.output_dir, logger_name='generate_data')
 
     double_chin_checker=get_model()
 
     logger.info(f'Initializing generator.')
 
-    model = StyleGAN2Generator(model_name, logger,truncation_psi=args.truncation_psi)
+    if args.model=='stylegan2_ffhq':
+        model = StyleGAN2Generator(model_name, logger, truncation_psi=args.truncation_psi)
+    elif args.model=='stylegan2_ada':
+        model = StyleGAN2adaGenerator(model_name, logger, truncation_psi=args.truncation_psi)
 
     kwargs = {'latent_space_type':'z'}
 
@@ -81,6 +86,7 @@ def main():
 
     for latent_codes_batch in model.get_batch_inputs(latent_codes):
         count+=1
+        print(latent_codes_batch.shape)
         outputs = model.easy_synthesize(latent_codes_batch,
                                         **kwargs,
                                         generate_style=args.generate_style,
@@ -132,9 +138,16 @@ def main():
 
     logger.info(f'Saving results.')
     for key, val in results.items():
-        save_path = os.path.join(args.output_dir, f'{key}.npy')
-        np.save(save_path, np.concatenate(val, axis=0))
-        print( np.concatenate(val, axis=0).shape)
+        if key=='s':
+            for s_i in range(26):
+                save_path = os.path.join(args.output_dir, f'{key}_{s_i}.npy')
+                tmp=np.concatenate([v[s_i] for v in val], axis=0)
+                print(tmp.shape)
+                np.save(save_path,tmp )
+        else:
+            save_path = os.path.join(args.output_dir, f'{key}.npy')
+            np.save(save_path, np.concatenate(val, axis=0))
+            print(np.concatenate(val, axis=0).shape)
 
     score_save_path=os.path.join(args.output_dir,'double_chin_scores.npy')
     scores_array=np.array(scores)[:,np.newaxis]

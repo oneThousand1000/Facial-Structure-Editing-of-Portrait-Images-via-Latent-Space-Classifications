@@ -1,0 +1,205 @@
+Tensor("G_synthesis_1/4x4/Conv/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/4x4/ToRGB/add:0", shape=(?, 512), dtype=float32)
+
+Tensor("G_synthesis_1/8x8/Conv0_up/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/8x8/Conv1/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/8x8/ToRGB/add:0", shape=(?, 512), dtype=float32)
+
+Tensor("G_synthesis_1/16x16/Conv0_up/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/16x16/Conv1/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/16x16/ToRGB/add:0", shape=(?, 512), dtype=float32)
+
+Tensor("G_synthesis_1/32x32/Conv0_up/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/32x32/Conv1/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/32x32/ToRGB/add:0", shape=(?, 512), dtype=float32)
+
+Tensor("G_synthesis_1/64x64/Conv0_up/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/64x64/Conv1/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/64x64/ToRGB/add:0", shape=(?, 512), dtype=float32)
+
+Tensor("G_synthesis_1/128x128/Conv0_up/add:0", shape=(?, 512), dtype=float32)
+Tensor("G_synthesis_1/128x128/Conv1/add:0", shape=(?, 256), dtype=float32)
+Tensor("G_synthesis_1/128x128/ToRGB/add:0", shape=(?, 256), dtype=float32)
+
+Tensor("G_synthesis_1/256x256/Conv0_up/add:0", shape=(?, 256), dtype=float32)
+Tensor("G_synthesis_1/256x256/Conv1/add:0", shape=(?, 128), dtype=float32)
+Tensor("G_synthesis_1/256x256/ToRGB/add:0", shape=(?, 128), dtype=float32)
+
+Tensor("G_synthesis_1/512x512/Conv0_up/add:0", shape=(?, 128), dtype=float32)
+Tensor("G_synthesis_1/512x512/Conv1/add:0", shape=(?, 64), dtype=float32)
+Tensor("G_synthesis_1/512x512/ToRGB/add:0", shape=(?, 64), dtype=float32)
+
+Tensor("G_synthesis_1/1024x1024/Conv0_up/add:0", shape=(?, 64), dtype=float32)
+Tensor("G_synthesis_1/1024x1024/Conv1/add:0", shape=(?, 32), dtype=float32)
+Tensor("G_synthesis_1/1024x1024/ToRGB/add:0", shape=(?, 32), dtype=float32)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+synthesis.b4.const : torch.Size([512, 4, 4])  -> input.input
+synthesis.b4.conv1.weight : torch.Size([512, 512, 3, 3])  ->  convs.0.conv.weight
+synthesis.b4.conv1.noise_strength : torch.Size([])  ->convs.0.noise.weight
+synthesis.b4.conv1.bias : torch.Size([512])  ->   convs.0.activate.bias
+synthesis.b4.conv1.affine.weight : torch.Size([512, 512])  ->convs.0.conv.modulation.weight
+synthesis.b4.conv1.affine.bias : torch.Size([512])  ->convs.0.conv.modulation.bias
+synthesis.b4.torgb.weight : torch.Size([3, 512, 1, 1])  -> to_rgbs.0.conv.weight
+synthesis.b4.torgb.bias : torch.Size([3])  -> to_rgbs.0.bias
+synthesis.b4.torgb.affine.weight : torch.Size([512, 512])  ->to_rgbs.0.conv.modulation.weight
+synthesis.b4.torgb.affine.bias : torch.Size([512])  ->to_rgbs.0.conv.modulation.bias
+
+synthesis.b8.conv0.weight : torch.Size([512, 512, 3, 3])  ->
+synthesis.b8.conv0.noise_strength : torch.Size([])  ->
+synthesis.b8.conv0.bias : torch.Size([512])  ->
+synthesis.b8.conv0.affine.weight : torch.Size([512, 512])  ->
+synthesis.b8.conv0.affine.bias : torch.Size([512])  ->
+synthesis.b8.conv1.weight : torch.Size([512, 512, 3, 3])  ->
+synthesis.b8.conv1.noise_strength : torch.Size([])  ->
+synthesis.b8.conv1.bias : torch.Size([512])  ->
+synthesis.b8.conv1.affine.weight : torch.Size([512, 512])  ->
+synthesis.b8.conv1.affine.bias : torch.Size([512])  ->
+synthesis.b8.torgb.weight : torch.Size([3, 512, 1, 1])  ->
+synthesis.b8.torgb.bias : torch.Size([3])  ->
+synthesis.b8.torgb.affine.weight : torch.Size([512, 512])
+synthesis.b8.torgb.affine.bias : torch.Size([512])
+
+synthesis.b16.conv0.weight : torch.Size([512, 512, 3, 3])
+synthesis.b16.conv0.noise_strength : torch.Size([])
+synthesis.b16.conv0.bias : torch.Size([512])
+synthesis.b16.conv0.affine.weight : torch.Size([512, 512])
+synthesis.b16.conv0.affine.bias : torch.Size([512])
+synthesis.b16.conv1.weight : torch.Size([512, 512, 3, 3])
+synthesis.b16.conv1.noise_strength : torch.Size([])
+synthesis.b16.conv1.bias : torch.Size([512])
+synthesis.b16.conv1.affine.weight : torch.Size([512, 512])
+synthesis.b16.conv1.affine.bias : torch.Size([512])
+synthesis.b16.torgb.weight : torch.Size([3, 512, 1, 1])
+synthesis.b16.torgb.bias : torch.Size([3])
+synthesis.b16.torgb.affine.weight : torch.Size([512, 512])
+synthesis.b16.torgb.affine.bias : torch.Size([512])
+
+synthesis.b32.conv0.weight : torch.Size([512, 512, 3, 3])
+synthesis.b32.conv0.noise_strength : torch.Size([])
+synthesis.b32.conv0.bias : torch.Size([512])
+synthesis.b32.conv0.affine.weight : torch.Size([512, 512])
+synthesis.b32.conv0.affine.bias : torch.Size([512])
+synthesis.b32.conv1.weight : torch.Size([512, 512, 3, 3])
+synthesis.b32.conv1.noise_strength : torch.Size([])
+synthesis.b32.conv1.bias : torch.Size([512])
+synthesis.b32.conv1.affine.weight : torch.Size([512, 512])
+synthesis.b32.conv1.affine.bias : torch.Size([512])
+synthesis.b32.torgb.weight : torch.Size([3, 512, 1, 1])
+synthesis.b32.torgb.bias : torch.Size([3])
+synthesis.b32.torgb.affine.weight : torch.Size([512, 512])
+synthesis.b32.torgb.affine.bias : torch.Size([512])
+
+synthesis.b64.conv0.weight : torch.Size([512, 512, 3, 3])
+synthesis.b64.conv0.noise_strength : torch.Size([])
+synthesis.b64.conv0.bias : torch.Size([512])
+synthesis.b64.conv0.affine.weight : torch.Size([512, 512])
+synthesis.b64.conv0.affine.bias : torch.Size([512])
+synthesis.b64.conv1.weight : torch.Size([512, 512, 3, 3])
+synthesis.b64.conv1.noise_strength : torch.Size([])
+synthesis.b64.conv1.bias : torch.Size([512])
+synthesis.b64.conv1.affine.weight : torch.Size([512, 512])
+synthesis.b64.conv1.affine.bias : torch.Size([512])
+synthesis.b64.torgb.weight : torch.Size([3, 512, 1, 1])
+synthesis.b64.torgb.bias : torch.Size([3])
+synthesis.b64.torgb.affine.weight : torch.Size([512, 512])
+synthesis.b64.torgb.affine.bias : torch.Size([512])
+
+synthesis.b128.conv0.weight : torch.Size([256, 512, 3, 3])
+synthesis.b128.conv0.noise_strength : torch.Size([])
+synthesis.b128.conv0.bias : torch.Size([256])
+synthesis.b128.conv0.affine.weight : torch.Size([512, 512])
+synthesis.b128.conv0.affine.bias : torch.Size([512])
+synthesis.b128.conv1.weight : torch.Size([256, 256, 3, 3])
+synthesis.b128.conv1.noise_strength : torch.Size([])
+synthesis.b128.conv1.bias : torch.Size([256])
+synthesis.b128.conv1.affine.weight : torch.Size([256, 512])
+synthesis.b128.conv1.affine.bias : torch.Size([256])
+synthesis.b128.torgb.weight : torch.Size([3, 256, 1, 1])
+synthesis.b128.torgb.bias : torch.Size([3])
+synthesis.b128.torgb.affine.weight : torch.Size([256, 512])
+synthesis.b128.torgb.affine.bias : torch.Size([256])
+
+synthesis.b256.conv0.weight : torch.Size([128, 256, 3, 3])
+synthesis.b256.conv0.noise_strength : torch.Size([])
+synthesis.b256.conv0.bias : torch.Size([128])
+synthesis.b256.conv0.affine.weight : torch.Size([256, 512])
+synthesis.b256.conv0.affine.bias : torch.Size([256])
+synthesis.b256.conv1.weight : torch.Size([128, 128, 3, 3])
+synthesis.b256.conv1.noise_strength : torch.Size([])
+synthesis.b256.conv1.bias : torch.Size([128])
+synthesis.b256.conv1.affine.weight : torch.Size([128, 512])
+synthesis.b256.conv1.affine.bias : torch.Size([128])
+synthesis.b256.torgb.weight : torch.Size([3, 128, 1, 1])
+synthesis.b256.torgb.bias : torch.Size([3])
+synthesis.b256.torgb.affine.weight : torch.Size([128, 512])
+synthesis.b256.torgb.affine.bias : torch.Size([128])
+
+synthesis.b512.conv0.weight : torch.Size([64, 128, 3, 3])
+synthesis.b512.conv0.noise_strength : torch.Size([])
+synthesis.b512.conv0.bias : torch.Size([64])
+synthesis.b512.conv0.affine.weight : torch.Size([128, 512])
+synthesis.b512.conv0.affine.bias : torch.Size([128])
+synthesis.b512.conv1.weight : torch.Size([64, 64, 3, 3])
+synthesis.b512.conv1.noise_strength : torch.Size([])
+synthesis.b512.conv1.bias : torch.Size([64])
+synthesis.b512.conv1.affine.weight : torch.Size([64, 512])
+synthesis.b512.conv1.affine.bias : torch.Size([64])
+synthesis.b512.torgb.weight : torch.Size([3, 64, 1, 1])
+synthesis.b512.torgb.bias : torch.Size([3])
+synthesis.b512.torgb.affine.weight : torch.Size([64, 512])
+synthesis.b512.torgb.affine.bias : torch.Size([64])
+
+synthesis.b1024.conv0.weight : torch.Size([32, 64, 3, 3])
+synthesis.b1024.conv0.noise_strength : torch.Size([])
+synthesis.b1024.conv0.bias : torch.Size([32])
+synthesis.b1024.conv0.affine.weight : torch.Size([64, 512])
+synthesis.b1024.conv0.affine.bias : torch.Size([64])
+synthesis.b1024.conv1.weight : torch.Size([32, 32, 3, 3])
+synthesis.b1024.conv1.noise_strength : torch.Size([])
+synthesis.b1024.conv1.bias : torch.Size([32])
+synthesis.b1024.conv1.affine.weight : torch.Size([32, 512])
+synthesis.b1024.conv1.affine.bias : torch.Size([32])
+synthesis.b1024.torgb.weight : torch.Size([3, 32, 1, 1])
+synthesis.b1024.torgb.bias : torch.Size([3])
+synthesis.b1024.torgb.affine.weight : torch.Size([32, 512])
+synthesis.b1024.torgb.affine.bias : torch.Size([32])
+
+mapping.fc0.weight : torch.Size([512, 512])                      -> style.1.weight
+mapping.fc0.bias : torch.Size([512])                             -> style.1.bias
+mapping.fc1.weight : torch.Size([512, 512])                      ->
+mapping.fc1.bias : torch.Size([512])                      ->
+mapping.fc2.weight : torch.Size([512, 512])                      ->
+mapping.fc2.bias : torch.Size([512])                      ->
+mapping.fc3.weight : torch.Size([512, 512])                      ->
+mapping.fc3.bias : torch.Size([512])                      ->
+mapping.fc4.weight : torch.Size([512, 512])                      ->
+mapping.fc4.bias : torch.Size([512])                      ->
+mapping.fc5.weight : torch.Size([512, 512])                      ->
+mapping.fc5.bias : torch.Size([512])                      ->
+mapping.fc6.weight : torch.Size([512, 512])                      ->
+mapping.fc6.bias : torch.Size([512])                      ->
+mapping.fc7.weight : torch.Size([512, 512])                      ->
+mapping.fc7.bias : torch.Size([512])                      ->
+============================================================
+
+

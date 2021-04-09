@@ -4,8 +4,8 @@ sys.path.append('./')
 from .chin_edge_generator  import face_alignment
 import cv2
 import numpy as np
-from .threeDDFA.landmarks_extractor_3ddfa import threeDDFA_landmarks_extractor,get_3DDFA_model
-from .PRNet.landmarks_extractor_PRNet import PRNet_landmarks_extractor,get_PRNet_model
+#from .threeDDFA.landmarks_extractor_3ddfa import threeDDFA_landmarks_extractor,get_3DDFA_model
+#from .PRNet.landmarks_extractor_PRNet import PRNet_landmarks_extractor,get_PRNet_model
 def get_chin_point(img):
     fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False)
     preds = fa.get_landmarks_from_image(img)
