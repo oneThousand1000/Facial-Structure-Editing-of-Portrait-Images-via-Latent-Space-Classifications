@@ -10,7 +10,7 @@ class Classifier():
     def __init__(self, config):
         self.config = config
 
-        model_name = 'classification'
+        model_name = 'double_chin_classification'
 
         self.debug = False
         self.model_name = model_name

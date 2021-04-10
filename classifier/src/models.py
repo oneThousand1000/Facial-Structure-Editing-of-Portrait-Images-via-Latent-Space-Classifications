@@ -57,8 +57,9 @@ class ClassificationModel(nn.Module):
         self.use_mask=config.use_mask
 
     def load(self):
+        print('Loading %s generator from %s...' % (self.name, self.weights_path))
         if os.path.exists(self.weights_path):
-            print('Loading %s generator from %s...' % (self.name,self.weights_path))
+            #print('Loading %s generator from %s...' % (self.name,self.weights_path))
 
             if torch.cuda.is_available():
                 data = torch.load(self.weights_path)

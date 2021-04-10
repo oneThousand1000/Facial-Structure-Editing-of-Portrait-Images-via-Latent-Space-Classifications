@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument('-i', '--latent_codes_path', type=str, default='',
                         help='If specified, will load latent codes from given '
                              'path instead of randomly sampling. (optional)')
-    parser.add_argument('-n', '--num', type=int, default=100,
+    parser.add_argument('-n', '--num', type=int, default=50000,
                         help='Number of images to generate. This field will be '
                              'ignored if `latent_codes_path` is specified. '
                              '(default: 1)')
@@ -42,7 +42,7 @@ def parse_args():
                         help='If specified, will skip generating images in '
                              'Style GAN. (default: generate images)')
     parser.add_argument('-p', '--truncation_psi', type=float,default='0.8')
-    parser.add_argument('-m', '--model', type=str, default='stylegan2_ada')
+    parser.add_argument('-m', '--model', type=str, default='stylegan2_ffhq')
     parser.add_argument("--double_chin_only", type=str2bool, nargs='?',
                         const=False, default=False,
                         help="Only generate double chin images.")
@@ -86,7 +86,6 @@ def main():
 
     for latent_codes_batch in model.get_batch_inputs(latent_codes):
         count+=1
-        print(latent_codes_batch.shape)
         outputs = model.easy_synthesize(latent_codes_batch,
                                         **kwargs,
                                         generate_style=args.generate_style,
@@ -99,6 +98,7 @@ def main():
 
 
                 score = check_double_chin(img=image[:, :, ::-1], model=double_chin_checker)
+
                 pbar.update(1)
                 if (score == 1):
                     choose.append(True)
