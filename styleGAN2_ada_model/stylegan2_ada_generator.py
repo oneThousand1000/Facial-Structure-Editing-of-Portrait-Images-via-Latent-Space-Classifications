@@ -14,7 +14,7 @@ from .base_generator import BaseGenerator
 import sys
 
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) ),'./stylegan2_ada'))
-print(sys.path)
+
 from .stylegan2_ada.training.networks import Generator
 __all__ = ['StyleGAN2adaGenerator']
 import time
@@ -128,6 +128,32 @@ class StyleGAN2adaGenerator(BaseGenerator):
         return self.preprocess(self.sample(num, latent_space_type),
                                latent_space_type)
 
+    def preprocess_style_space_latent(self,latent_codes):
+
+        s_latent_codes = []
+        s_space_size=[
+            (1, 512),(1, 512),(1, 512),(1, 512),(1, 512),(1, 512),
+            (1, 512),(1, 512),(1, 512),(1, 512),(1, 512),(1, 512),
+            (1, 512),(1, 512),(1, 512),(1, 256),(1, 256),(1, 256),
+            (1, 128),(1, 128),(1, 128),(1, 64),(1, 64),(1, 64),
+            (1, 32),(1, 32)
+        ]
+        for index in range(26):
+            assert latent_codes[index].shape==s_space_size[index]
+        s_latent_codes.append([
+            torch.from_numpy(latent_codes[0]).type(torch.FloatTensor).to(self.run_device),
+            torch.from_numpy(latent_codes[1]).type(torch.FloatTensor).to(self.run_device)
+        ])
+        i=2
+        while i<26:
+            s_latent_codes.append([
+                torch.from_numpy(latent_codes[i]).type(torch.FloatTensor).to(self.run_device),
+                torch.from_numpy(latent_codes[i+1]).type(torch.FloatTensor).to(self.run_device),
+                torch.from_numpy(latent_codes[i+2]).type(torch.FloatTensor).to(self.run_device)
+            ])
+            i+=3
+        return s_latent_codes
+
     def synthesize(self,
                    latent_codes,
                    latent_space_type='Z',
@@ -149,13 +175,19 @@ class StyleGAN2adaGenerator(BaseGenerator):
         Returns:
           A dictionary whose values are raw outputs from the generator.
         """
-        if not isinstance(latent_codes, np.ndarray):
-            raise ValueError(f'Latent codes should be with type `numpy.ndarray`!')
+
 
         results = {}
 
         latent_space_type = latent_space_type.upper()
-        latent_codes_shape = latent_codes.shape
+
+        if latent_space_type!='S':
+            if not isinstance(latent_codes, np.ndarray):
+                raise ValueError(f'Latent codes should be with type `numpy.ndarray`!')
+            latent_codes_shape = latent_codes.shape
+        else :
+            if not isinstance(latent_codes, list):
+                raise ValueError(f'Latent codes should be with type `numpy.ndarray`!')
 
         # Generate from Z space.
         img=None
@@ -231,8 +263,17 @@ class StyleGAN2adaGenerator(BaseGenerator):
             results['wp'] = latent_codes
             results['s'] = self.get_value(styleSpace_latent)
         elif latent_space_type == 'S':
-            pass
-            # TODO
+
+            assert len(latent_codes)==26
+            s_latent_codes = self.preprocess_style_space_latent(latent_codes)
+            img = self.model(
+                z=s_latent_codes,
+                c=self.model.c_dim,
+                truncation_psi=self.truncation_psi,
+                truncation_cutoff=None,
+                input_latent_space_type='s'
+            )
+
         else:
             raise ValueError(f'Latent space type `{latent_space_type}` is invalid!')
 
@@ -245,9 +286,8 @@ class StyleGAN2adaGenerator(BaseGenerator):
                      style_codes=None,
                      mix_ratio=0.5,
                    latent_space_type='Z',
-
-                   generate_style=False,
-                   generate_image=True):
+                     generate_image=True,
+                   generate_style=False):
         """Synthesizes images with given latent codes.
 
         One can choose whether to generate the layer-wise style codes.
@@ -386,7 +426,19 @@ class StyleGAN2adaGenerator(BaseGenerator):
             results['style_wps'] = style_wps
         elif latent_space_type == 'S':
             pass
-            # TODO
+            #TODO
+            # assert len(latent_codes) == 26
+            # assert len(style_codes) == 26
+            # s_latent_codes = self.preprocess_style_space_latent(latent_codes)
+            # style_s_latent_codes = self.preprocess_style_space_latent(style_codes)
+            #
+            # img = self.model(
+            #     z=s_latent_codes,
+            #     c=self.model.c_dim,
+            #     truncation_psi=self.truncation_psi,
+            #     truncation_cutoff=None,
+            #     input_latent_space_type='s'
+            # )
         else:
             raise ValueError(f'Latent space type `{latent_space_type}` is invalid!')
 

@@ -1,6 +1,8 @@
 # double_chin
 REMOVE DOUBLE CHIN
 
+Support W+ Space and styleSpace, based on styleGAN2 and styleGAN2-ada
+
 ## demo
 
 
@@ -25,6 +27,16 @@ opencv-python==4.3.0.36
 Pillow==5.4.1
 tensorflow-gpu==1.14.0
 ```
+
+for stylegan-ada-pytorch
+
+```
+torch==1.7.0+cu110 
+torchvision==0.8.0+cu110 
+torchaudio==0.7.0
+```
+
+
 
 ## Setup
 

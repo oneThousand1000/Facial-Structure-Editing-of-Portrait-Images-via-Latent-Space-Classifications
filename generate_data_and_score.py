@@ -42,7 +42,7 @@ def parse_args():
                         help='If specified, will skip generating images in '
                              'Style GAN. (default: generate images)')
     parser.add_argument('-p', '--truncation_psi', type=float,default='0.8')
-    parser.add_argument('-m', '--model', type=str, default='stylegan2_ffhq')
+    parser.add_argument('-m', '--model', type=str, default='stylegan2_ada')
     parser.add_argument("--double_chin_only", type=str2bool, nargs='?',
                         const=False, default=False,
                         help="Only generate double chin images.")
