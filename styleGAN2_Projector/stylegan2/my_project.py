@@ -69,7 +69,7 @@ def project_generated_images(network_pkl, seeds, num_snapshots, truncation_psi):
 
 def project_real_images(network_pkl, dataset_name, data_dir,num_images, num_snapshots,save_dir):
     data_list = glob.glob(os.path.join(data_dir, '*.jpg'))+glob.glob(os.path.join(data_dir, '*.png'))
-    data_list=sorted(data_list)[::-1]
+    data_list=sorted(data_list)
 
     print(len(data_list))
 

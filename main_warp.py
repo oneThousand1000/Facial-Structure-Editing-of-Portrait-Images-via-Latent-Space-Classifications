@@ -21,7 +21,7 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_select -intercept',
+    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author',
                         help='If specified, will load latent codes from given ')
 
     parser.add_argument('-b', '--boundary_path', type=str,
@@ -91,7 +91,7 @@ def run():
     latent_codes = []
     origin_img_list = []
     for img in glob.glob(os.path.join(origin_img_dir, '*.jpg'))+glob.glob(os.path.join(origin_img_dir, '*.png')):
-        name = os.path.basename(img)[:6]
+        name = os.path.basename(img)[:-4]
         code_path = os.path.join(code_dir, f'{name}_wp.npy')
         if os.path.exists(code_path):
             latent_codes.append(code_path)
@@ -117,9 +117,11 @@ def run():
 
             wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
             origin_img = cv2.imread(origin_img_list[img_index])
-            #print(np.linalg.norm(boundary,axis=2,keepdims=True).shape)
+            #   sum(coef_[0][i]*x[i]) + intercept_[0] = 0
+            # print(np.sum(boundary * wps_latent,axis=2,keepdims=True).shape)
+            # print(np.linalg.norm(boundary,axis=2,keepdims=True).shape)
             distance =np.abs((np.sum(boundary * wps_latent,axis=2,keepdims=True)+intercept)/np.linalg.norm(boundary,axis=2,keepdims=True))*(-1.8)
-            print(distance)
+            # print(distance.shape)
 
             # print(intercept.shape)
             # distance=[]

@@ -36,7 +36,25 @@ torchvision==0.8.0+cu110
 torchaudio==0.7.0
 ```
 
+## Dataset
 
+Double_Chin Dataset
+
+https://drive.google.com/drive/folders/10e6WB4YLb3Mn6Us4mPAgBksGr7kBx8q0?usp=sharing
+
+The dataset is build by our diffusion method(See the Section3.4 in our paper)
+
+| dir                        | information                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| ├ double_chin_pair_psi_0.5 | data for **truncation_psi-0.5**                              |
+| │ ├ codes                  | latent codes. {img_id}\_wp.npy is the original latent code, {img_id}\_inverted_WP_codes.npy is the latent code after removing double chin. |
+| │ ├ diffused               | the images that generated directly from {img_id}\_inverted_WP_codes.npy |
+| │ ├ res                    | results images , {img_id}.jpg                                |
+| │ └ origin                 | origin images, {img_id}.jpg                                  |
+| ├ double_chin_pair_psi_0.8 | data for **truncation_psi-0.8**                              |
+| │ ├ codes                  | latent codes. {img_id}\_wp.npy is the original latent code, {img_id}\_inverted_wp.npy is the latent code after removing double chin. |
+| │ ├ res                    | results images, {img_id}.jpg                                 |
+| │ └ origin                 | origin images, {img_id}.jpg                                  |
 
 ## Setup
 

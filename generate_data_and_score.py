@@ -141,9 +141,15 @@ def main():
         if key=='s':
             for s_i in range(26):
                 save_path = os.path.join(args.output_dir, f'{key}_{s_i}.npy')
-                tmp=np.concatenate([v[s_i] for v in val], axis=0)
-                print(tmp.shape)
-                np.save(save_path,tmp )
+                s_latent=np.concatenate([v[s_i] for v in val], axis=0)
+                print(s_latent.shape)
+                np.save(save_path,s_latent )
+                s_mean=s_latent.mean(axis=0)
+                s_std=s_latent.std(axis=0)
+                mean_save_path = os.path.join(args.output_dir, f'{key}_{s_i}_mean.npy')
+                std_save_path = os.path.join(args.output_dir, f'{key}_{s_i}_std.npy')
+                np.save(mean_save_path, s_mean)
+                np.save(std_save_path, s_std)
         else:
             save_path = os.path.join(args.output_dir, f'{key}.npy')
             np.save(save_path, np.concatenate(val, axis=0))

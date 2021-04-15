@@ -13,10 +13,6 @@ def get_PRNet_model():
 
 def PRNet_landmarks_extractor(img,prn):
 
-
-    # ---- init PRN
-
-
     if isinstance(img,str):
         image = imread(img)
     else:

@@ -30,26 +30,21 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/007249_wp.npy',
+    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author/code/00667_wp.npy', #
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-o', '--output_dir', type=str,
                         default='./docs/results/1',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-m', '--image_path', type=str,
-                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/007249_w_doublechin.jpg',
+                        default='F:/DoubleChin/datasets/ffhq_data/real_img_author/origin/00667.jpg',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-b', '--boundary_path', type=str,
-                        default='./interface/boundaries/fine/psi_0.8/boundary.npy',
+                        default='./interface/boundaries/fine/all_',
                         help='Path to the semantic boundary. (required)')
     parser.add_argument('-s', '--latent_space_type', type=str, default='wp',
                         choices=['z', 'Z', 'w', 'W', 'wp', 'wP', 'Wp', 'WP'],
                         help='Latent space used in Style GAN. (default: `Z`)')
-    parser.add_argument('--boundary_begin_ratio', type=float, default=0,
-                        help='End point for manipulation in latent space. '
-                             '(default: 3.0)')
-    parser.add_argument('--boundary_end_ratio', type=float, default=-6.0,
-                        help='End point for manipulation in latent space. '
-                             '(default: 3.0)')
+
     parser.add_argument('--step_num', type=int, default=5,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
@@ -70,15 +65,20 @@ def run():
 
 
     print(f'Initializing generator.')
-    model = StyleGAN2Generator(model_name, logger=None,randomize_noise=True)
+    model = StyleGAN2Generator(model_name, logger=None,randomize_noise=False)
     kwargs = {'latent_space_type': latent_space_type}
 
 
 
     print(f'Preparing boundary.')
-    if not os.path.isfile(args.boundary_path):
-        raise ValueError(f'Boundary `{args.boundary_path}` does not exist!')
-    boundary = np.load(args.boundary_path)
+    boundary_path = os.path.join(args.boundary_path, 'boundary.npy')
+    intercept_path = os.path.join(args.boundary_path, 'intercept.npy')
+    if not os.path.isfile(boundary_path):
+        raise ValueError(f'Boundary `{boundary_path}` does not exist!')
+    if not os.path.isfile(intercept_path):
+        raise ValueError(f'Boundary `{intercept_path}` does not exist!')
+    boundary = np.load(boundary_path)
+    intercept = np.load(intercept_path)
 
 
     neckMaskNet = get_parsingNet()
@@ -92,9 +92,13 @@ def run():
     origin_img = cv2.imread(args.image_path)
     mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
     res_imgs=[]
+    distance=-7
     for step in range(args.step_num+1):
         pbar.update(1)
-        edited_wps_latent = wps_latent + (args.boundary_end_ratio-args.boundary_begin_ratio)/args.step_num*step*boundary
+        # distance = np.abs(
+        #     (np.sum(boundary * wps_latent, axis=2, keepdims=True) + intercept) / np.linalg.norm(boundary, axis=2,
+        #                                                                                         keepdims=True)) * (-1.8)
+        edited_wps_latent = wps_latent + distance/args.step_num*step*boundary
 
         edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
                                                 style_range=range(6, 18),
@@ -112,8 +116,6 @@ def run():
 
 
     cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_step{step}_fixed.jpg'),np.concatenate(res_imgs,axis=1))
-    #cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_temp.jpg'), np.concatenate(temp, axis=1))
-    #imageio.mimsave(os.path.join(args.output_dir, f'{image_name}.gif'), res_imgs, 'GIF', duration=0.3)
 
 
 if __name__ == '__main__':
