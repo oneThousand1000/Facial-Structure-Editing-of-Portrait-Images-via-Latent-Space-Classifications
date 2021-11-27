@@ -30,16 +30,16 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author/code/00667_wp.npy', #
+    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author/code/04660_wp.npy', #
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-o', '--output_dir', type=str,
-                        default='./docs/results/1',
+                        default='F:/CHINGER/docs/bishe/good',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-m', '--image_path', type=str,
-                        default='F:/DoubleChin/datasets/ffhq_data/real_img_author/origin/00667.jpg',
+                        default='F:/DoubleChin/datasets/ffhq_data/real_img_author/origin/04660.jpg',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-b', '--boundary_path', type=str,
-                        default='./interface/boundaries/fine/all_',
+                        default='./interface/boundaries/fine/all',
                         help='Path to the semantic boundary. (required)')
     parser.add_argument('-s', '--latent_space_type', type=str, default='wp',
                         choices=['z', 'Z', 'w', 'W', 'wp', 'wP', 'Wp', 'WP'],
@@ -75,10 +75,7 @@ def run():
     intercept_path = os.path.join(args.boundary_path, 'intercept.npy')
     if not os.path.isfile(boundary_path):
         raise ValueError(f'Boundary `{boundary_path}` does not exist!')
-    if not os.path.isfile(intercept_path):
-        raise ValueError(f'Boundary `{intercept_path}` does not exist!')
     boundary = np.load(boundary_path)
-    intercept = np.load(intercept_path)
 
 
     neckMaskNet = get_parsingNet()
@@ -92,12 +89,13 @@ def run():
     origin_img = cv2.imread(args.image_path)
     mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
     res_imgs=[]
-    distance=-7
+    distance=-10
     for step in range(args.step_num+1):
         pbar.update(1)
         # distance = np.abs(
         #     (np.sum(boundary * wps_latent, axis=2, keepdims=True) + intercept) / np.linalg.norm(boundary, axis=2,
         #                                                                                         keepdims=True)) * (-1.8)
+        print(distance/args.step_num*step)
         edited_wps_latent = wps_latent + distance/args.step_num*step*boundary
 
         edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
@@ -108,14 +106,11 @@ def run():
         edited_img = edited_output['image'][0][:, :, ::-1]
 
         warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
-        #res .append(warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255))
         res= warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255)
-        #save_path=os.path.join(args.output_dir, f'{image_name}_step{step}.jpg')
         res_imgs.append(res)
-        #cv2.imwrite(save_path,res)
 
 
-    cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_step{step}_fixed.jpg'),np.concatenate(res_imgs,axis=1))
+    cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_step{step}_fixed-test.jpg'),np.concatenate(res_imgs,axis=1))
 
 
 if __name__ == '__main__':

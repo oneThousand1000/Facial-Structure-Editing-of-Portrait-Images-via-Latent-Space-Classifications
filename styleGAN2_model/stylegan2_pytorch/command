@@ -1,2 +1,3 @@
 python run_convert_from_tf.py --input=stylegan2-ffhq-config-f.pkl --output G.pth D.pth Gs.pth
 python run_generator.py generate_images --network=Gs.pth --seeds=6600-6625 --truncation_psi=0.5
+python run_projector.py project_real_images --data_dir=F:\CHINGER\video_example\aligned --num_images=4 --network=F:/CHINGER/styleGAN2_model/pretrain/Gs.pth --output=F:/CHINGER/video_example/codes

@@ -28,13 +28,13 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Train semantic boundary with given latent codes and '
                     'attribute scores.')
-    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_pose',
+    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_z',
                         help='Directory to save the output results. (required)')
-    parser.add_argument('-c', '--latent_codes_path', type=str, default='F:/DoubleChin/datasets/ffhq_gen_data/stylegan_ffhq_2_psi_0.8/selected_w.npy',
+    parser.add_argument('-c', '--latent_codes_path', type=str, default='F:/DoubleChin/datasets/ffhq_gen_data/stylegan_ffhq_2_psi_0.8/z.npy',
                         help='Path to the input latent codes. (required)')
-    parser.add_argument('-s', '--scores_path', type=str, default='F:/DoubleChin/datasets/ffhq_gen_data/stylegan_ffhq_2_psi_0.8/score_y.npy',
+    parser.add_argument('-s', '--scores_path', type=str, default='F:/DoubleChin/datasets/ffhq_gen_data/stylegan_ffhq_2_psi_0.8/double_chin_scores.npy',
                         help='Path to the input attribute scores. (required)')
-    parser.add_argument('-n', '--chosen_num_or_ratio', type=float, default=0.40,
+    parser.add_argument('-n', '--chosen_num_or_ratio', type=float, default=0.1,
                         help='How many samples to choose for training. '
                              '(default: 0.2)')
     parser.add_argument('-r', '--split_ratio', type=float, default=0.98,
@@ -49,7 +49,7 @@ def parse_args():
 def main():
     """Main function."""
     args = parse_args()
-    logger = setup_logger(args.output_dir, logger_name='generate_data')
+    logger = setup_logger(args.output_dir, logger_name='train_boundary')
 
     logger.info('Loading latent codes.')
     if not os.path.isfile(args.latent_codes_path):

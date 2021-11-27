@@ -95,7 +95,7 @@ def warp_img(img1,img2,net,debug=False):
 
     if debug:
         warpped_img, debug_img = warp(img1,img2, points1, points2, debug=debug)
-        return warpped_img, np.concatenate([can1,can2,debug_img],axis=1)
+        return warpped_img, np.concatenate([can1,can2,debug_img,face_mask1,neck_mask1,face_mask2,neck_mask2],axis=1)
     else:
         warpped_img = warp(img1,img2, points1, points2, debug=debug)
         return warpped_img

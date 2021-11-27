@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import torch
 from torch import nn
 import torchvision
-
+import os
 
 class LPIPS_VGG16(nn.Module):
     _FEATURE_IDX = [0, 4, 9, 16, 23, 30]
@@ -40,12 +40,24 @@ class LPIPS_VGG16(nn.Module):
         super(LPIPS_VGG16, self).__init__()
         features = torchvision.models.vgg16(pretrained=True).features
         self.slices = nn.ModuleList()
-        linear_weights = torch.utils.model_zoo.load_url(self._LINEAR_WEIGHTS_URL)
+        #linear_weights = torch.utils.model_zoo.load_url(self._LINEAR_WEIGHTS_URL)
         for i in range(1, len(self._FEATURE_IDX)):
             idx_range = range(self._FEATURE_IDX[i - 1], self._FEATURE_IDX[i])
             self.slices.append(nn.Sequential(*[features[j] for j in idx_range]))
         self.linear_layers = nn.ModuleList()
-        for weight in torch.utils.model_zoo.load_url(self._LINEAR_WEIGHTS_URL).values():
+
+        # for weight in torch.utils.model_zoo.load_url(self._LINEAR_WEIGHTS_URL).values():
+        #     weight = weight.view(1, -1)
+        #     linear = nn.Linear(weight.size(1), 1, bias=False)
+        #     linear.weight.data.copy_(weight)
+        #     self.linear_layers.append(linear)
+        weight_path = './vgg.pth'
+
+        current_work_dir = os.path.dirname(__file__)  # 当前文件所在的目录
+
+        self.weight_path = os.path.join(current_work_dir, weight_path)
+
+        for weight in torch.load(self.weight_path).values():
             weight = weight.view(1, -1)
             linear = nn.Linear(weight.size(1), 1, bias=False)
             linear.weight.data.copy_(weight)
@@ -74,5 +86,6 @@ class LPIPS_VGG16(nn.Module):
         for slice, linear in zip(self.slices, self.linear_layers):
             x0, x1 = slice(x0), slice(x1)
             _x0, _x1 = self._normalize_tensor(x0, eps), self._normalize_tensor(x1, eps)
+            #print(torch.mean((_x0 - _x1) ** 2, dim=[-1, -2]).size())
             dist += linear(torch.mean((_x0 - _x1) ** 2, dim=[-1, -2]))
         return dist.view(-1)

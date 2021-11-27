@@ -29,21 +29,13 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/landmarks/3DDFA/sample_paper',
+    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author/code',
                         help='If specified, will load latent codes from given ')
 
-    parser.add_argument('--boundary_path1', type=str,
-                        default='./interface/boundaries/fine/all/boundary.npy',
-                        help='Path to the semantic boundary. (required)')
-    parser.add_argument( '--boundary_path2', type=str,
+    parser.add_argument( '--boundary_path', type=str,
                         default='./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_w/boundary.npy',
                         help='Path to the semantic boundary. (required)')
-    parser.add_argument('--boundary_path3', type=str,
-                        default='./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_w_c_pose/boundary.npy',
-                        help='Path to the semantic boundary. (required)')
-    parser.add_argument('--boundary_path4', type=str,
-                        default='./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_pose/boundary.npy',
-                        help='Path to the semantic boundary. (required)')
+
     parser.add_argument('--boundary_init_ratio', type=float, default=-4.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
@@ -93,61 +85,26 @@ def run():
 
 
 
-    boundary1 = np.load(args.boundary_path1)
-    boundary2 = np.load(args.boundary_path2)
-    boundary3 = np.load(args.boundary_path3)
-    boundary4 = np.load(args.boundary_path4)
-
-    print(f'Load latent codes and images from `{args.data_dir}`.')
-    latent_codes = []
-    origin_img_list = []
-    for img in glob.glob(os.path.join(origin_img_dir, '*.jpg')):
-        name = os.path.basename(img)[:6]
-        code_path = os.path.join(code_dir,f'{name}_wp.npy')
-        if os.path.exists(code_path):
-            latent_codes.append(code_path)
-            origin_img_list.append(img)
-    total_num = len(latent_codes)
-
-    print(f'Processing {total_num} samples.')
+    boundary = np.load(args.boundary_path)
 
 
-    pbar=tqdm(total=total_num)
+    for img in glob.glob('F:/DoubleChin/comparision/samples3/origin/*.jpg'):
+        image_name = os.path.splitext(os.path.basename(img))[0]
+        wps_latent = np.reshape(np.load(os.path.join(args.data_dir,f'{image_name}_wp.npy')), (1, 18, 512))
 
-    for img_index in range(total_num):
-        pbar.update(1)
-        image_name = os.path.splitext(os.path.basename(origin_img_list[img_index]))[0]
-        wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
-        # if int(image_name)<200:
-        #    origin_img = model.easy_synthesize(latent_codes=wps_latent,**kwargs)['image'][0][:, :, ::-1]
-        #    cv2.imwrite(os.path.join(origin_img_dir, image_name + '.jpg'), origin_img)
-        edited_wps_latent_bf = wps_latent + args.boundary_init_ratio * boundary1
-        edited_wps_latent_bc = wps_latent + args.boundary_init_ratio * boundary2
-        edited_wps_latent_bc_c_pose = wps_latent + args.boundary_init_ratio * boundary3
-        edited_wps_latent_pose = wps_latent - args.boundary_init_ratio * boundary4
+        edited_wps_latent_bc = wps_latent + args.boundary_init_ratio * boundary
 
 
 
-        bf_img = model.easy_style_mixing(latent_codes=edited_wps_latent_bf,
-                                                style_range=range(7, 18),
-                                                style_codes=wps_latent,
-                                                mix_ratio=1.0, **kwargs)['image'][0][:, :, ::-1]
+
         bc_img = model.easy_style_mixing(latent_codes=edited_wps_latent_bc,
                                          style_range=range(7, 18),
                                          style_codes=wps_latent,
                                          mix_ratio=1.0, **kwargs)['image'][0][:, :, ::-1]
 
-        bc_c_pose_img = model.easy_style_mixing(latent_codes=edited_wps_latent_bc_c_pose,
-                                         style_range=range(7, 18),
-                                         style_codes=wps_latent,
-                                         mix_ratio=1.0, **kwargs)['image'][0][:, :, ::-1]
-        bc_c_pose = model.easy_style_mixing(latent_codes=edited_wps_latent_pose,
-                                                style_range=range(7, 18),
-                                                style_codes=wps_latent,
-                                                mix_ratio=1.0, **kwargs)['image'][0][:, :, ::-1]
 
-        cv2.imwrite(os.path.join(res_path,image_name+'.jpg'),np.concatenate([cv2.imread(origin_img_list[img_index]),bc_img,bf_img],axis=1))
-        cv2.imwrite(os.path.join(res_path,image_name+'_.jpg'),np.concatenate([bc_c_pose,bc_img,bc_c_pose_img],axis=1))
+
+        cv2.imwrite(os.path.join('F:/DoubleChin/comparision/samples3/interfacegan',image_name+'.jpg'),bc_img)
 
 
 

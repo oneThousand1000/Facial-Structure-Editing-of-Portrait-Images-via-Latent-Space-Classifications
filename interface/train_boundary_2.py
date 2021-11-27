@@ -28,7 +28,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Train semantic boundary with given latent codes and '
                     'attribute scores.')
-    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/fine/all_',
+    parser.add_argument('-o', '--output_dir', type=str,default='boundaries/fine/all_test_1000',
                         help='Directory to save the output results. (required)')
     parser.add_argument('-c', '--latent_codes_path', type=str, default='./fine_boundary_train_data/wps_all.npy',
                         help='Path to the input latent codes. (required)')
@@ -48,11 +48,15 @@ def parse_args():
 
 def main():
     args = parse_args()
-    logger = setup_logger(args.output_dir, logger_name='generate_data')
-    latent_codes_all = np.load(args.latent_codes_path)
+    logger = setup_logger(args.output_dir, logger_name='train_boundary')
 
-    print(latent_codes_all.shape)
-    scores = np.load(args.scores_path)
+    origin_path_list=glob.glob('F:/DoubleChin/datasets/ffhq_data/double_chin_psi_0.8/code/*_inverted_wp.npy')[:1000]
+    res_path_list = [path.replace('_inverted_wp.npy','_wp.npy') for path in origin_path_list]
+
+    latent_codes_all = np.concatenate([np.load(path) for path in origin_path_list+res_path_list])
+
+
+    scores = np.concatenate([np.zeros((1000,1)),np.ones((1000,1))])
 
     scores=np.reshape(scores,(scores.shape[0],1))
     print("scores dim:", scores.shape)

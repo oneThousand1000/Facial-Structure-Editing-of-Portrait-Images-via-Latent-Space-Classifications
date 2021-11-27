@@ -6,7 +6,7 @@ from torch.nn import functional as F
 
 from . import models, utils
 from .external_models import lpips
-
+from .perceptual_model import PerceptualModel
 
 class Projector(nn.Module):
     """
@@ -106,6 +106,9 @@ class Projector(nn.Module):
             lpips_model = lpips.LPIPS_VGG16(pixel_min=-1, pixel_max=1)
             lpips_size = 256
         self.lpips_model = lpips_model.eval().requires_grad_(False)
+
+        #self.lpips_model = PerceptualModel(min_val=-1, max_val=1)
+
         self.lpips_size = lpips_size
 
         self.to(dlatent_device)
@@ -168,6 +171,7 @@ class Projector(nn.Module):
               lr_rampup_length=0.05,
               noise_ramp_length=0.75,
               regularize_noise_weight=1e5,
+              regularize_l2_weight=5e5,
               verbose=True,
               verbose_prefix=''):
         """
@@ -258,12 +262,19 @@ class Projector(nn.Module):
             output = self.G_synthesis(dlatents)
             assert output.size() == self._job.target.size(), \
                 'target size {} does not fit output size {} of generator'.format(
-                    target.size(), output.size())
+                    self._job.target.size(), output.size())
 
             output_scaled = self._scale_for_lpips(output)
 
-            # Main loss: LPIPS distance of output and target
+            # # Main loss: LPIPS distance of output and target
+            # print(output_scaled.size(),self._job.target_scaled.size())
             lpips_distance = torch.mean(self.lpips_model(output_scaled, self._job.target_scaled))
+
+            # x_feat = self.lpips_model.net(output_scaled)
+            # x_rec_feat = self.lpips_model.net(self._job.target_scaled)
+            # lpips_distance = torch.mean((x_feat - x_rec_feat) ** 2, dim=[1, 2, 3])
+
+            l2_distance=torch.mean((output - self._job.target) ** 2, dim=[1, 2, 3])
 
             # Calculate noise regularization loss
             reg_loss = 0
@@ -279,7 +290,7 @@ class Projector(nn.Module):
                     size = size // 2
 
             # Combine loss, backward and update params
-            loss = lpips_distance + self._job.regularize_noise_weight * reg_loss
+            loss = lpips_distance + self._job.regularize_noise_weight * reg_loss +l2_distance*self._job.regularize_l2_weight
             self._job.opt.zero_grad()
             loss.backward()
             self._job.opt.step()
@@ -297,7 +308,8 @@ class Projector(nn.Module):
             if self._job.verbose:
                 self._job.value_tracker.add('loss', float(loss))
                 self._job.value_tracker.add('lpips_distance', float(lpips_distance))
-                self._job.value_tracker.add('noise_reg', float(reg_loss))
+                self._job.value_tracker.add('l2_distance', float(l2_distance*self._job.regularize_l2_weight))
+                self._job.value_tracker.add('noise_reg', float(reg_loss*self._job.regularize_noise_weight))
                 self._job.value_tracker.add('lr', learning_rate, beta=0)
                 self._job.progress.write(self._job.verbose_prefix, str(self._job.value_tracker))
                 if self._job.current_step >= self._job.num_steps:

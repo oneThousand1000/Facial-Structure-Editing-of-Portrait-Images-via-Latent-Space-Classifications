@@ -1,17 +1,12 @@
-# double_chin
+# 【double_chin
 REMOVE DOUBLE CHIN
 
-Support W+ Space and styleSpace, based on styleGAN2 and styleGAN2-ada
+Based on styleGAN2 .
 
 ## demo
 
 
-<figure class="half">     <img src="docs/000019_w_doublechin.gif"gif  width="200">     <img src="docs/000077_w_doublechin.gif"  width="200"> </figure>
-
-
-
-<figure class="half">     <img src="docs/000304_w_doublechin.gif"gif  width="200">     <img src="docs/000335_w_doublechin.gif"  width="200"> </figure>
-
+<figure class="half">     <img src="docs/000019_w_doublechin.gif"gif  width="200">   
 ## Dependencies
 
 ```
@@ -38,36 +33,22 @@ torchaudio==0.7.0
 
 ## Dataset
 
-Double_Chin Dataset
+[chin-editing Dataset](https://github.com/oneThousand1000/coarse-to-fine-chin-editing)
 
-https://drive.google.com/drive/folders/10e6WB4YLb3Mn6Us4mPAgBksGr7kBx8q0?usp=sharing
 
-The dataset is build by our diffusion method(See the Section3.4 in our paper)
-
-| dir                        | information                                                  |
-| -------------------------- | ------------------------------------------------------------ |
-| ├ double_chin_pair_psi_0.5 | data for **truncation_psi-0.5**                              |
-| │ ├ codes                  | latent codes. {img_id}\_wp.npy is the original latent code, {img_id}\_inverted_WP_codes.npy is the latent code after removing double chin. |
-| │ ├ diffused               | the images that generated directly from {img_id}\_inverted_WP_codes.npy |
-| │ ├ res                    | results images , {img_id}.jpg                                |
-| │ └ origin                 | origin images, {img_id}.jpg                                  |
-| ├ double_chin_pair_psi_0.8 | data for **truncation_psi-0.8**                              |
-| │ ├ codes                  | latent codes. {img_id}\_wp.npy is the original latent code, {img_id}\_inverted_wp.npy is the latent code after removing double chin. |
-| │ ├ res                    | results images, {img_id}.jpg                                 |
-| │ └ origin                 | origin images, {img_id}.jpg                                  |
 
 ## Setup
 
-Download the following pretrained models from https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing, put each of them to $PATH:
+Download the following pretrained models, put each of them to $PATH:
 
-|                             | PATH                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| classification_model.pth    | ./classifier/classification                                  |
-| 79999_iter.pth              | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
-| stylegan2-ffhq-config-f.pkl | ./styleGAN2_Projector/stylegan2/model                        |
-| vgg16_zhang_perceptual.pkl  | ./styleGAN2_Projector/stylegan2/model                        |
-| Gs.pth                      | ./styleGAN2_model/pretrain                                   |
-| vgg16.pth                   | ./styleGAN2_model/pretrain                                   |
+|                                                              | PATH                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [classification_model.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./classifier/classification                                  |
+| [79999_iter.pth](https://drive.google.com/open?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812) | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
+| [stylegan2-ffhq-config-f.pkl](https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/) | ./styleGAN2_Projector/stylegan2/model                        |
+| [vgg16_zhang_perceptual.pkl](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_Projector/stylegan2/model                        |
+| [Gs.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
+| [vgg16.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 
 
 
@@ -83,7 +64,7 @@ pip install face-alignment
 
 ### **boundaries**
 
-We provides boundaries in `./interface/boundaries`:
+We provides boundaries in [./interface/boundaries](https://github.com/oneThousand1000/CHINGER-Removing-Double-Chin-from-Portraits/tree/main/interface/boundaries):
 
 | dir                 | information                                                  |
 | ------------------- | ------------------------------------------------------------ |
@@ -100,7 +81,7 @@ Notice that **psi-0.5** dataset and **psi-0.8** dataset is images and latent cod
 
 ### coarse boundary training
 
-You can use the pre-trained boundaries in `./interface/boundaries`, or train your own boundary:
+You can use the pre-trained boundaries in [./interface/boundaries](https://github.com/oneThousand1000/CHINGER-Removing-Double-Chin-from-Portraits/tree/main/interface/boundaries), or train your own boundary:
 
 1. Data generate:
 
@@ -190,7 +171,7 @@ python train_fine_boundary.py\
 --split_ratio 0.9 \
 ```
 
-the fine boundary have better performance in preserving face identity.
+the fine boundary has better performance in preserving face identity.
 
 the comparison between  fine boundary(right) and coarse boundary(middle):
 
@@ -198,15 +179,15 @@ the comparison between  fine boundary(right) and coarse boundary(middle):
 
 ### Directly remove double chin 
 
-We provide scripts to directly remove double chin.
+We provide scripts to directly remove the double chin.
 
 **data prepare :**
 
-<u>For real images</u>, we recommend you to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images. (Notice that we can only get the WP latent code of real images, therefore you need to use boundaries in **WP(W+)** latent space.)
+<u>For real images</u>, we recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images. (Notice that we can only get the WP latent code of real images, therefore you need to use boundaries in **WP(W+)** latent space.)
 
 Download the official checkpoint from https://nvlabs-fi-cdn.nvidia.com/stylegan2/networks/ , put the `stylegan2-ffhq-config-f.pkl` to `./styleGAN2_Projector/stylegan2/model` , download the vgg model from https://nvlabs-fi-cdn.nvidia.com/stylegan/networks/metrics/vgg16_zhang_perceptual.pkl,  put the `vgg16_zhang_perceptual.pkl` to `./styleGAN2_Projector/stylegan2/model`, then check compiler_bindir_search_path list in `./styleGAN2_Projector/stylegan2\dnnlib\tflib\custom_ops.py`
 
-then run:
+then run Projector(tensorflow version):
 
 ```python
 cd styleGAN2_Projector
@@ -217,6 +198,20 @@ python real_img_project.py\
     --data-dir=PATH_TO_REAL_IMGS\
 	--save-dir=PATH_TO_SAVE_LATENT_CODE\
 ```
+
+or Projector(pytorch version):
+
+```python
+cd styleGAN2_model/stylegan2_pytorch
+python run_projector.py 
+project_real_images\ 
+--data_dir=PATH_TO_REAL_IMGS\ 
+--num_images=4 \
+--network=../pretrain/Gs.pth\
+--output=PATH_TO_SAVE_LATENT_CODE
+```
+
+
 
 
 
@@ -248,7 +243,26 @@ python main_warp.py\
 --latent_space_type WP
 ```
 
-## reference
+## TODO
+
+- [x] Support  [StyleSpace](https://arxiv.org/abs/2011.12799)
+- [x] Support  styleGAN2-ada-pytorch
+- [ ] train separation boundaries on StyleSpace
+- [ ] 
+
+## Contact
+
+onethousand@zju.edu.cn
+
+## Citation
+
+If you use this code for your research, please cite our paper:
+
+
+
+## Reference and Acknowledgements
+
+We thanks the following works:
 
 [ stylegan2](https://github.com/NVlabs/stylegan2)
 
@@ -256,6 +270,42 @@ python main_warp.py\
 
 [stylegan2(pytorch-version)](https://github.com/Tetratrio/stylegan2_pytorch)
 
+[stylegan2-ada-pytorh](https://github.com/NVlabs/stylegan2-ada-pytorch)
+
 [face-alignment](https://github.com/1adrianb/face-alignment)
 
 [idinvert](https://github.com/genforce/idinvert)
+
+```
+@inproceedings{zhu2020indomain,
+  title     = {In-domain GAN Inversion for Real Image Editing},
+  author    = {Zhu, Jiapeng and Shen, Yujun and Zhao, Deli and Zhou, Bolei},
+  booktitle = {Proceedings of European Conference on Computer Vision (ECCV)},
+  year      = {2020}
+}
+@inproceedings{bulat2017far,
+  title={How far are we from solving the 2D \& 3D Face Alignment problem? (and a dataset of 230,000 3D facial landmarks)},
+  author={Bulat, Adrian and Tzimiropoulos, Georgios},
+  booktitle={International Conference on Computer Vision},
+  year={2017}
+}
+@inproceedings{shen2020interpreting,
+  title     = {Interpreting the Latent Space of GANs for Semantic Face Editing},
+  author    = {Shen, Yujun and Gu, Jinjin and Tang, Xiaoou and Zhou, Bolei},
+  booktitle = {CVPR},
+  year      = {2020}
+}
+@article{shen2020interfacegan,
+  title   = {InterFaceGAN: Interpreting the Disentangled Face Representation Learned by GANs},
+  author  = {Shen, Yujun and Yang, Ceyuan and Tang, Xiaoou and Zhou, Bolei},
+  journal = {TPAMI},
+  year    = {2020}
+}
+@inproceedings{Karras2019stylegan2,
+  title     = {Analyzing and Improving the Image Quality of {StyleGAN}},
+  author    = {Tero Karras and Samuli Laine and Miika Aittala and Janne Hellsten and Jaakko Lehtinen and Timo Aila},
+  booktitle = {Proc. CVPR},
+  year      = {2020}
+}
+```
+

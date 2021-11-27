@@ -49,7 +49,7 @@ def parse_args():
 def main():
     """Main function."""
     args = parse_args()
-    logger = setup_logger(args.output_dir, logger_name='generate_data')
+    logger = setup_logger(args.output_dir, logger_name='train_boundary')
 
     logger.info('Loading latent codes.')
 

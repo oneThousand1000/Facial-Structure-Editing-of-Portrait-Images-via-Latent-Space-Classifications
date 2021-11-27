@@ -21,7 +21,7 @@ def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
         description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/real_img_author',
+    parser.add_argument('-i', '--data_dir', type=str, default='F:/DoubleChin/datasets/ffhq_data/compare_stylespace',
                         help='If specified, will load latent codes from given ')
 
     parser.add_argument('-b', '--boundary_path', type=str,
@@ -29,7 +29,7 @@ def parse_args():
                         help='Path to the semantic boundary. (required)')
 
 
-    parser.add_argument('--boundary_init_ratio', type=float, default=-10.0,
+    parser.add_argument('--boundary_init_ratio', type=float, default=-5.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
 
@@ -112,75 +112,82 @@ def run():
         if os.path.exists(os.path.join(res_dir, f'{image_name}.jpg')):
             continue
 
-        try:
-            start_edit = time.clock()
+        # try:
+        #
+        # except:
+        #     pass
+        start_edit = time.clock()
 
-            wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
-            origin_img = cv2.imread(origin_img_list[img_index])
-            #   sum(coef_[0][i]*x[i]) + intercept_[0] = 0
-            # print(np.sum(boundary * wps_latent,axis=2,keepdims=True).shape)
-            # print(np.linalg.norm(boundary,axis=2,keepdims=True).shape)
-            distance =np.abs((np.sum(boundary * wps_latent,axis=2,keepdims=True)+intercept)/np.linalg.norm(boundary,axis=2,keepdims=True))*(-1.8)
-            # print(distance.shape)
+        wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
+        origin_img = cv2.imread(origin_img_list[img_index])
+        #   sum(coef_[0][i]*x[i]) + intercept_[0] = 0
+        # print(np.sum(boundary * wps_latent,axis=2,keepdims=True).shape)
+        # print(np.linalg.norm(boundary,axis=2,keepdims=True).shape)
+        # distance =np.abs((np.sum(boundary * wps_latent,axis=2,keepdims=True)+intercept)/np.linalg.norm(boundary,axis=2,keepdims=True))*(-1.8)
+        distance = args.boundary_init_ratio
+        # print(distance.shape)
 
-            # print(intercept.shape)
-            # distance=[]
-            # for index in range(18):
-            #     distance.append(np.abs((np.sum(boundary[:,index,:] * wps_latent[:,index,:])+intercept[index])/np.linalg.norm(boundary[:,index,:]))*(-1.6))
-            #
-            # distance=np.reshape(np.array(distance),(1,18,1))
-            # print(distance)
+        # print(intercept.shape)
+        # distance=[]
+        # for index in range(18):
+        #     distance.append(np.abs((np.sum(boundary[:,index,:] * wps_latent[:,index,:])+intercept[index])/np.linalg.norm(boundary[:,index,:]))*(-1.6))
+        #
+        # distance=np.reshape(np.array(distance),(1,18,1))
+        # print(distance)
 
+        edited_wps_latent = wps_latent + distance * boundary
+        origin_encode = model.easy_synthesize(wps_latent,
+                                              **kwargs)
+        origin_encode = origin_encode['image'][0][:, :, ::-1]
+        edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
+                                                style_range=range(6, 18),
+                                                style_codes=wps_latent,
+                                                mix_ratio=1.0, **kwargs)
+        #
 
-            edited_wps_latent = wps_latent + distance * boundary
-            origin_encode = model.easy_synthesize(wps_latent,
-                                                  **kwargs)
-            origin_encode = origin_encode['image'][0][:, :, ::-1]
-            edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
-                                                    style_range=range(6, 18),
-                                                    style_codes=wps_latent,
-                                                    mix_ratio=1.0, **kwargs)
-            #
+        edited_img = edited_output['image'][0][:, :, ::-1]
 
-            edited_img = edited_output['image'][0][:, :, ::-1]
+        time_edit = (time.clock() - start_edit)
 
-            time_edit = (time.clock() - start_edit)
+        # edited_img2 = edited_output2['image'][0][:, :, ::-1]
+        start_mask = time.clock()
+        mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
+        time_mask = (time.clock() - start_mask)
 
-            # edited_img2 = edited_output2['image'][0][:, :, ::-1]
-            start_mask = time.clock()
-            mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
-            time_mask = (time.clock() - start_mask)
+        debug = True
+        start_warp = time.clock()
+        if debug:
+            warpped_edited_img, debug_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=True)
+        else:
+            warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
 
-            debug = False
-            start_warp = time.clock()
-            if debug:
-                warpped_edited_img, debug_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=True)
-            else:
-                warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
+        time_warp = (time.clock() - start_warp)
 
-            time_warp = (time.clock() - start_warp)
+        # cv2.imshow('i', ( warpped_edited_img * (mask / 255)*0.5  + origin_img * (1 - mask / 255)).astype(np.uint8))
+        # cv2.waitKey(0)
 
-            # cv2.imshow('i', ( warpped_edited_img * (mask / 255)*0.5  + origin_img * (1 - mask / 255)).astype(np.uint8))
-            # cv2.waitKey(0)
+        res = warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255)
 
-            res = warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255)
+        res2 = edited_img * (mask / 255) + origin_img * (1 - mask / 255)
 
-            res2 = edited_img * (mask / 255) + origin_img * (1 - mask / 255)
-
-            if debug:
-                cv2.imwrite(os.path.join(res_dir, f'{image_name}.jpg'),res)
-                cv2.imwrite(os.path.join(temp_dir, f'{image_name}_0.jpg'),
-                            np.concatenate([origin_img, origin_encode, edited_img,warpped_edited_img, res2, res], axis=1))
-                cv2.imwrite(os.path.join(temp_dir, f'{image_name}_1.jpg'),
-                            debug_img)
-            else:
-                cv2.imwrite(os.path.join(res_dir, f'{image_name}.jpg'), res)
-                cv2.imwrite(os.path.join(temp_dir, f'{image_name}.jpg'),
-                            np.concatenate([origin_img,  res], axis=1))
-            times.append([time_edit, time_mask, time_warp])
-            img_count += 1
-        except:
-            pass
+        if debug:
+            cv2.imwrite(os.path.join(res_dir, f'{image_name}.jpg'), res)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}_origin_encode.jpg'), origin_encode)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}_edited_img.jpg'), edited_img)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}_warpped_edited_img.jpg'), warpped_edited_img)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}_res_w_warp.jpg'), res2)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}_res_wo_warp.jpg'), res)
+            print(os.path.join(temp_dir, f'{image_name}_1.jpg'))
+            for debug_index in range(debug_img.shape[1]//1024):
+                cv2.imwrite(os.path.join(temp_dir, f'{image_name}_{debug_index}.jpg'),
+                            debug_img[:,debug_index*1024:debug_index*1024+1024,:])
+        else:
+            cv2.imwrite(os.path.join(res_dir, f'ours.jpg'), res)
+            cv2.imwrite(os.path.join(res_dir, f'edited.jpg'), edited_img)
+            cv2.imwrite(os.path.join(temp_dir, f'{image_name}.jpg'),
+                        np.concatenate([origin_img, res], axis=1))
+        times.append([time_edit, time_mask, time_warp])
+        img_count += 1
 
     print(times)
     times = np.array(times)

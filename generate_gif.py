@@ -4,11 +4,8 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 from styleGAN2_model.stylegan2_generator import StyleGAN2Generator
-from classifier.src.feature_extractor.neck_mask_extractor import get_neck_blur_mask,get_parsingNet,get_neck_mask
 from warp.warpper import warp_img
-import glob
-
-from CHINGER_inverter import StyleGAN2Inverter
+from classifier.src.feature_extractor.neck_mask_extractor import get_neck_blur_mask, get_parsingNet
 '''
 Data prepare:
 For real images process, you should input `--data_dir PATH`,
@@ -30,20 +27,17 @@ def str2bool(v):
 def parse_args():
     """Parses arguments."""
     parser = argparse.ArgumentParser(
-        description='Edit image synthesis with given semantic boundary.')
-    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/codes/000241_wp.npy',
+        description='Edit image synthesis with given semantic boundary.') #
+    parser.add_argument('-i', '--latent_path', type=str, default='F:/DoubleChin/datasets/ffhq_data/compare_stylespace/code/052932_wp.npy',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-o', '--output_dir', type=str,
-                        default='./docs/',
+                        default='./docs/results/gif',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('-m', '--image_path', type=str,
-                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_pair_0.8_/images/000241_w_doublechin.jpg',
+                        default='F:/DoubleChin/datasets/ffhq_data/double_chin_psi_0.8/origin/002405.jpg',
                         help='If specified, will load latent codes from given ')
     parser.add_argument('--boundary_path1', type=str,
                         default='./interface/boundaries/fine/all/boundary.npy',
-                        help='Path to the semantic boundary. (required)')
-    parser.add_argument('--boundary_path2', type=str,
-                        default='./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_w/boundary.npy',
                         help='Path to the semantic boundary. (required)')
 
 
@@ -53,10 +47,10 @@ def parse_args():
     parser.add_argument('--boundary_begin_ratio', type=float, default=0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--boundary_end_ratio', type=float, default=-5.0,
+    parser.add_argument('--boundary_end_ratio', type=float, default=-6,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--step_num', type=int, default=30,
+    parser.add_argument('--step_num', type=int, default=10,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
     return parser.parse_args()
@@ -84,17 +78,18 @@ def run():
     print(f'Preparing boundary.')
 
     boundary_f = np.load(args.boundary_path1)
-    boundary_c = np.load(args.boundary_path2)
 
 
 
     pbar=tqdm(total=args.step_num)
 
     image_name = os.path.splitext(os.path.basename(args.image_path))[0]
-
+    neckMaskNet = get_parsingNet()
 
     wps_latent = np.reshape(np.load(args.latent_path), (1, 18, 512))
     res_imgs_f=[]
+    origin_img=cv2.imread('F:/DoubleChin/datasets/ffhq_data/compare_stylespace/origin/052932.jpg')
+    mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
     for step in range(args.step_num+1):
         pbar.update(1)
         edited_wps_latent_f = wps_latent + (args.boundary_end_ratio-args.boundary_begin_ratio)/args.step_num*step*boundary_f
@@ -105,17 +100,18 @@ def run():
 
         edited_img_f = edited_output_f['image'][0]#[:, :, ::-1]
 
-
-
-        res_imgs_f.append(edited_img_f)
+        warpped_edited_img = warp_img(origin_img, edited_img_f, net=neckMaskNet, debug=False)
+        res = warpped_edited_img * (mask / 255) + origin_img[:, :, ::-1] * (1 - mask / 255)
+        res_imgs_f.append(res)
         #cv2.imwrite(save_path,res)
 
 
     # cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_bf.jpg'),np.concatenate(res_imgs_f,axis=1))
     # cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_bc.jpg'), np.concatenate(res_imgs_c, axis=1))
     #cv2.imwrite(os.path.join(args.output_dir, f'{image_name}_temp.jpg'), np.concatenate(temp, axis=1))
+    #res_imgs_f.reverse()
     print('save to ',os.path.join(args.output_dir, f'{image_name}.gif'))
-    imageio.mimsave(os.path.join(args.output_dir, f'{image_name}.gif'), res_imgs_f, 'GIF', duration=0.3)
+    imageio.mimsave('F:/DoubleChin/datasets/ffhq_data/compare_stylespace/warp_res/ours_res.gif', res_imgs_f , 'GIF', duration=0.3)
 
 
 if __name__ == '__main__':

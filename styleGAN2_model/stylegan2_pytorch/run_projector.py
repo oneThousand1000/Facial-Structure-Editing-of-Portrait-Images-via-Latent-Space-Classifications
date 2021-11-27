@@ -109,7 +109,14 @@ def _add_shared_arguments(parser):
     parser.add_argument(
         '--regularize_noise_weight',
         help='The weight for noise regularization. Default: %(default)s',
-        default=1e5,
+        default=1e4,
+        type=float,
+        metavar='VALUE'
+    )
+    parser.add_argument(
+        '--regularize_l2_weight',
+        help='The weight for noise regularization. Default: %(default)s',
+        default=5e-2,
         type=float,
         metavar='VALUE'
     )
@@ -153,7 +160,7 @@ def _add_shared_arguments(parser):
         help='CUDA device indices (given as separate ' + \
             'values if multiple, i.e. "--gpu 0 1"). Default: Use CPU',
         type=int,
-        default=[],
+        default=[0],
         nargs='*',
         metavar='INDEX'
     )
@@ -231,8 +238,10 @@ def get_arg_parser():
 #----------------------------------------------------------------------------
 
 def project_images(G, images, name_prefix, args):
-
+    if not os.path.exists(os.path.join(args.output,'images')):
+        os.mkdir(os.path.join(args.output,'images'))
     device = torch.device(args.gpu[0] if args.gpu else 'cpu')
+    print("device:" ,args.gpu[0] if args.gpu else 'cpu')
     if device.index is not None:
         torch.cuda.set_device(device.index)
     if len(args.gpu) > 1:
@@ -242,8 +251,7 @@ def project_images(G, images, name_prefix, args):
         )
     G = utils.unwrap_module(G).to(device)
 
-    lpips_model = stylegan2.external_models.lpips.LPIPS_VGG16(
-        pixel_min=args.pixel_min, pixel_max=args.pixel_max)
+    lpips_model = None
 
     proj = stylegan2.project.Projector(
         G=G,
@@ -266,25 +274,27 @@ def project_images(G, images, name_prefix, args):
             lr_rampup_length=args.lr_rampup_length,
             noise_ramp_length=args.noise_ramp_length,
             regularize_noise_weight=args.regularize_noise_weight,
+            regularize_l2_weight=args.regularize_l2_weight,
             verbose=True,
             verbose_prefix='Projecting image(s) {}/{}'.format(
                 i * args.batch_size + len(target), len(images))
         )
-        snapshot_steps = set(
-            args.num_steps - np.linspace(
+        snapshot_steps = set(args.num_steps-np.linspace(
                 0, args.num_steps, args.num_snapshots, endpoint=False, dtype=int))
         for k, image in enumerate(
         utils.tensor_to_PIL(target, pixel_min=args.pixel_min, pixel_max=args.pixel_max)):
-            image.save(os.path.join(args.output, name_prefix[i + k] + 'target.png'))
+            image.save(os.path.join(os.path.join(args.output,'images'), name_prefix[i + k] + 'target.png'))
         for j in range(args.num_steps):
             proj.step()
-            if j in snapshot_steps:
+            if j in snapshot_steps or j ==(args.num_steps-1):
                 generated = utils.tensor_to_PIL(
                     proj.generate(), pixel_min=args.pixel_min, pixel_max=args.pixel_max)
                 for k, image in enumerate(generated):
                     image.save(os.path.join(
-                        args.output, name_prefix[i + k] + 'step%04d.png' % (j + 1)))
+                        os.path.join(args.output,'images'), name_prefix[i + k] + 'step%04d.png' % (j + 1)))
 
+        np.save(os.path.join(args.output, name_prefix[i] + '_wp.npy'),
+            proj.get_dlatent().cpu().detach().numpy())
 #----------------------------------------------------------------------------
 
 def project_generated_images(G, args):
@@ -357,6 +367,7 @@ def project_generated_images(G, args):
 
 def project_real_images(G, args):
     device = torch.device(args.gpu[0] if args.gpu else 'cpu')
+
     print('Loading images from "%s"...' % args.data_dir)
     dataset = utils.ImageFolder(
         args.data_dir, pixel_min=args.pixel_min, pixel_max=args.pixel_max)
@@ -370,8 +381,14 @@ def project_real_images(G, args):
         if isinstance(data, (tuple, list)):
             data = data[0]
         images.append(data)
+
     images = torch.stack(images).to(device)
-    name_prefix = ['image%04d-' % i for i in indices]
+    name_prefix=[]
+    for root, _, fnames in sorted(os.walk(args.data_dir)):
+        for fname in sorted(fnames):
+            name_prefix.append(fname[:-4])
+
+    #name_prefix = ['image%04d-' % i for i in indices]
     print('Done!')
     project_images(G, images, name_prefix, args)
 
