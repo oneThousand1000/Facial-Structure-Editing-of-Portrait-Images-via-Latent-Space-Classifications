@@ -16,7 +16,6 @@ import numpy as np
 from tqdm import tqdm
 
 from styleGAN2_model.stylegan2_generator import StyleGAN2Generator
-from styleGAN2_ada_model.stylegan2_ada_generator import StyleGAN2adaGenerator
 from interface.utils.logger import setup_logger
 from classifier.classify import get_model,check_double_chin
 from utils import str2bool
@@ -42,7 +41,6 @@ def parse_args():
                         help='If specified, will skip generating images in '
                              'Style GAN. (default: generate images)')
     parser.add_argument('-p', '--truncation_psi', type=float,default='0.8')
-    parser.add_argument('-m', '--model', type=str, default='stylegan2_ada')
     parser.add_argument("--double_chin_only", type=str2bool, nargs='?',
                         const=False, default=False,
                         help="Only generate double chin images.")
@@ -53,17 +51,14 @@ def parse_args():
 def main():
     """Main function."""
     args = parse_args()
-    model_name=args.model
     logger = setup_logger(args.output_dir, logger_name='generate_data')
 
     double_chin_checker=get_model()
 
     logger.info(f'Initializing generator.')
 
-    if args.model=='stylegan2_ffhq':
-        model = StyleGAN2Generator(model_name, logger, truncation_psi=args.truncation_psi)
-    elif args.model=='stylegan2_ada':
-        model = StyleGAN2adaGenerator(model_name, logger, truncation_psi=args.truncation_psi)
+    model_name = 'stylegan2_ffhq'
+    model = StyleGAN2Generator(model_name, logger, truncation_psi=args.truncation_psi)
 
     kwargs = {'latent_space_type':'z'}
 

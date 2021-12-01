@@ -49,20 +49,6 @@ def load_config(mode=None):
         mode (int): 1: train, 2: test, 3: eval, reads from config file if not specified
     """
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--path', '--checkpoints', type=str, default='./checkpoints', help='model checkpoints path (default: ./checkpoints)')
-    # # parser.add_argument('--model', type=int, choices=[1, 2, 3, 4], help='1: edge model, 2: inpaint model, 3: edge-inpaint model, 4: joint model')
-    #
-    # # test mode
-    # if mode == 2:
-    #     parser.add_argument('--input', type=str, help='path to the input images directory or an input image')
-    #     parser.add_argument('--mask', type=str, help='path to the masks directory or a mask file')
-    #     parser.add_argument('--edge', type=str, help='path to the edges directory or an edge file')
-    #     parser.add_argument('--output', type=str, help='path to the output directory')
-
-    #args = parser.parse_args()
-
-
 
     config_path = os.path.join(os.path.dirname(__file__),'./config.yml')
 
@@ -77,34 +63,6 @@ def load_config(mode=None):
     # load config file
     config = Config(config_path)
 
-    # train mode
-    # if mode == 1:
-    #     config.MODE = 1
-    #     if args.model:
-    #         config.MODEL = args.model
-
-    # test mode
-    # elif mode == 2:
-    #     config.MODE = 2
-    #     config.MODEL = args.model if args.model is not None else 3
-    #     config.INPUT_SIZE = 0
-    #
-    #     if args.input is not None:
-    #         config.TEST_FLIST = args.input
-    #
-    #     if args.mask is not None:
-    #         config.TEST_MASK_FLIST = args.mask
-    #
-    #     if args.edge is not None:
-    #         config.TEST_EDGE_FLIST = args.edge
-    #
-    #     if args.output is not None:
-    #         config.RESULTS = args.output
-
-    # eval mode
-    # elif mode == 3:
-    #     config.MODE = 3
-    #     config.MODEL = args.model if args.model is not None else 3
 
     return config
 

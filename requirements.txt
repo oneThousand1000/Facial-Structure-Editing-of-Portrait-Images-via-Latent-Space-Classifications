@@ -9,3 +9,4 @@ tensorflow-gpu==1.14.0
 Keras==2.2.5
 requests==2.26.0
 scipy==1.2.1
+sklearn==0.0
