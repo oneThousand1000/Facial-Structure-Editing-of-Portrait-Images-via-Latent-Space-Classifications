@@ -6,7 +6,8 @@ from torch.nn import functional as F
 
 from . import models, utils
 from .external_models import lpips
-from .perceptual_model import PerceptualModel
+import sys
+sys.path.append('..')
 
 class Projector(nn.Module):
     """

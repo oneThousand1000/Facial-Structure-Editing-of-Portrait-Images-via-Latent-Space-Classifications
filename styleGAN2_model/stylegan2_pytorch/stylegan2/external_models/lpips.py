@@ -51,7 +51,7 @@ class LPIPS_VGG16(nn.Module):
         #     linear = nn.Linear(weight.size(1), 1, bias=False)
         #     linear.weight.data.copy_(weight)
         #     self.linear_layers.append(linear)
-        weight_path = './vgg.pth'
+        weight_path = '../../../pretrain/vgg.pth'
 
         current_work_dir = os.path.dirname(__file__)  # 当前文件所在的目录
 

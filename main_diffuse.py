@@ -77,11 +77,9 @@ def run():
     code_dir = os.path.join(args.data_dir, 'code')
     diffuse_code_dir = os.path.join(args.data_dir, 'diffuse_code')
     res_dir = os.path.join(args.data_dir, 'diffuse_res')
-    temp_dir = os.path.join(args.data_dir, 'temp')
     assert os.path.exists(origin_img_dir), f'{origin_img_dir} dose not exist!'
     assert os.path.exists(code_dir), f'data_dir {code_dir} dose not exist!'
     mkdir(res_dir)
-    mkdir(temp_dir)
     mkdir(diffuse_code_dir)
 
     print(f'Initializing generator.')
@@ -99,15 +97,16 @@ def run():
         stylegan2_model=model)
 
     print(f'Preparing boundary.')
-    if not os.path.isfile(args.boundary_path):
-        raise ValueError(f'Boundary `{args.boundary_path}` does not exist!')
-    boundary = np.load(args.boundary_path)
+    boundary_path = os.path.join(args.boundary_path, 'boundary.npy')
+    if not os.path.isfile(boundary_path):
+        raise ValueError(f'Boundary `{boundary_path}` does not exist!')
+    boundary = np.load(boundary_path)
 
     print(f'Load latent codes and images from `{args.data_dir}`.')
     latent_codes = []
     origin_img_list = []
-    for img in glob.glob(os.path.join(origin_img_dir, '*.jpg'))[::-1]:
-        name = os.path.basename(img)[:6]
+    for img in glob.glob(os.path.join(origin_img_dir, '*'))[::-1]:
+        name = os.path.basename(img)[:-4]
         code_path = os.path.join(code_dir, f'{name}_wp.npy')
         if os.path.exists(code_path):
             latent_codes.append(code_path)
@@ -137,14 +136,10 @@ def run():
         mask_dilate_blur = cv2.blur(mask_dilate, ksize=(35, 35))
         mask_dilate_blur = neck_mask + (255 - neck_mask) // 255 * mask_dilate_blur
         train_count = 0
-        diffuse_step = []
-        # invert_imgs=[]
         ratio = args.boundary_init_ratio
         while (score):
             train_count += 1
             edited_wps_latent = wps_latent + ratio * boundary
-
-            # wps_latents = np.concatenate([wps_latent,edited_wps_latent], axis=0)
 
             edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
                                                     style_range=range(7, 18),
@@ -168,7 +163,6 @@ def run():
 
             times.append(time_diffuse)
             viz_result = viz_result[:, :, ::-1]
-            # invert_imgs.append(viz_result)
             res = origin_img * (1 - mask_dilate_blur / 255) + viz_result * (mask_dilate_blur / 255)
             score = check_double_chin(img=res, model=double_chin_checker)
             if score:
@@ -182,19 +176,10 @@ def run():
             if not args.cycle or train_count >= 5:
                 break
 
-            #diffuse_step.append(np.concatenate([synthesis_image, res], axis=0))
 
         print('train %d times.' % train_count)
         np.save(os.path.join(diffuse_code_dir, f'{image_name}_inverted_wp.npy'), code)
-
-        #diffuse_step = np.concatenate(diffuse_step, axis=1)
-
-        # invert_imgs= np.concatenate(invert_imgs, axis=1)
         cv2.imwrite(os.path.join(res_dir, f'{image_name}.jpg'), res)
-        # cv2.imwrite(os.path.join(res_dir, f'{image_name}_invert.jpg'), invert_imgs)
-        #cv2.imwrite(os.path.join(temp_dir, f'{image_name}_diffuse_step.jpg'), diffuse_step)
-    # print(times)
-    # print('train %d images using %f seconds, each image uses %f seconds'%(len(times),times,np.array(times)/len(times)))
 
 
 if __name__ == '__main__':

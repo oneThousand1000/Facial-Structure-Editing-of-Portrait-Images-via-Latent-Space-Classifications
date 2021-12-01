@@ -281,6 +281,7 @@ def project_images(G, images, name_prefix, args):
         )
         snapshot_steps = set(args.num_steps-np.linspace(
                 0, args.num_steps, args.num_snapshots, endpoint=False, dtype=int))
+
         for k, image in enumerate(
         utils.tensor_to_PIL(target, pixel_min=args.pixel_min, pixel_max=args.pixel_max)):
             image.save(os.path.join(os.path.join(args.output,'images'), name_prefix[i + k] + 'target.png'))
