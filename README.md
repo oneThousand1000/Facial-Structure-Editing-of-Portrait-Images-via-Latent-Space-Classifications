@@ -204,8 +204,7 @@ the results of diffusion will be saved in  `data_dir`
 ```python
 python train_fine_boundary.py\
 --output_dir PATH_TO_SAVE_BOUNDARY\
---latent_codes_path $TRAINING_DIR$/codes \
---chosen_num_or_ratio 0.1\
+--latent_codes_path $TRAINING_DIR$/codes\
 --split_ratio 0.9 \
 ```
 

@@ -26,12 +26,8 @@ def parse_args():
                         help='Directory to save the output results. (required)')
     parser.add_argument('-c', '--latent_codes_path', type=str, required=True,
                         help='Path to the input latent codes. (required)')
-    parser.add_argument('-s', '--scores_path', type=str,required=True,
-                        help='Path to the input attribute scores. (required)')
-    parser.add_argument('-n', '--chosen_num_or_ratio', type=float, default=0.12,
-                        help='How many samples to choose for training. '
-                             '(default: 0.2)')
-    parser.add_argument('-r', '--split_ratio', type=float, default=0.98,
+
+    parser.add_argument('-r', '--split_ratio', type=float, default=0.9,
                         help='Ratio with which to split training and validation '
                              'sets. (default: 0.7)')
     parser.add_argument('-V', '--invalid_value', type=float, default=None,
@@ -70,7 +66,7 @@ def main():
         print("latent_space_dim:", latent_codes.shape)
         boundary = train_boundary(latent_codes=latent_codes,
                                   scores=scores,
-                                  chosen_num_or_ratio=args.chosen_num_or_ratio,
+                                  chosen_num_or_ratio=0.5,
                                   split_ratio=args.split_ratio,
                                   invalid_value=args.invalid_value,
                                   logger=logger)
