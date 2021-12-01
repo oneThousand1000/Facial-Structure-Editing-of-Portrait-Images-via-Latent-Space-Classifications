@@ -1,3 +1,0 @@
-LIBRARY mesh_core_cython.cp36-win_amd64.pyd
-EXPORTS
-PyInit_mesh_core_cython
