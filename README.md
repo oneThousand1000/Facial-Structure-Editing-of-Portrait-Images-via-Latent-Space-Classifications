@@ -1,13 +1,7 @@
-# 【double_chin
-REMOVE DOUBLE CHIN
+# Coarse-to-Fine: Facial Structure Editing of Portrait Images via Latent Space Classifications
 
-Based on styleGAN2 .
-
-## demo
-
-
-<figure class="half">     <img src="docs/000019_w_doublechin.gif"gif  width="200">   
 ## Dependencies
+
 
 ```
 cuda 10.0
@@ -23,19 +17,9 @@ Pillow==5.4.1
 tensorflow-gpu==1.14.0
 ```
 
-for stylegan-ada-pytorch
-
-```
-torch==1.7.0+cu110 
-torchvision==0.8.0+cu110 
-torchaudio==0.7.0
-```
-
 ## Dataset
 
 [chin-editing Dataset](https://github.com/oneThousand1000/coarse-to-fine-chin-editing)
-
-
 
 ## Setup
 
@@ -50,15 +34,13 @@ Download the following pretrained models, put each of them to $PATH:
 | [Gs.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [vgg16.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 
-
-
-Install face-alignment for face detection.
+install 
 
 ```python
-pip install face-alignment
+conda create -n Coarse2Fine python=3.6
+activate Coarse2Fine
+pip install -r requirement.txt
 ```
-
-
 
 ## How to Use
 
