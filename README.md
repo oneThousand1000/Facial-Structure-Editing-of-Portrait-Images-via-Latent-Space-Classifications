@@ -27,6 +27,7 @@ Download the following pretrained models, put each of them to **PATH**:
 | [Gs.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [vgg16.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [vgg.pth](https://github.com/richzhang/PerceptualSimilarity/blob/master/models/weights/v0.1/vgg.pth?raw=true) | ./styleGAN2_model/pretrain                                   |
+| [shape_predictor_68_face_landmarks.dat.bz2](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2) | ./models                                                     |
 
 Please install dependencies by
 
@@ -61,18 +62,18 @@ Notice that **psi-0.5** dataset and **psi-0.8** dataset is images and latent cod
 
 <u>For **real images**</u>, first find the matching latent vectors.
 
-For **aligned images** original image `{name}.jpg`  that placed in`$DATA_PATH$/origin`, the corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `$DATA_PATH$/code`. 
-
-1. We recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
-2. Or you can run Projector(pytorch version):
-
-​		First, [Align faces from input images](https://github.com/pbaylies/stylegan-encoder/blob/master/align_images.py) and save aligned images to $DATA_PATH$/origin.
+First, [Align faces from input images](https://github.com/pbaylies/stylegan-encoder/blob/master/align_images.py) and save aligned images to $DATA_PATH$/origin.
 
 ```python
 python align_images.py\
 	--raw_dir $DATA_PATH$/raw\
     --aligned_dir $DATA_PATH$/origin
 ```
+
+For **aligned images** original image `{name}.jpg`  that placed in`$DATA_PATH$/origin`, the corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `$DATA_PATH$/code`. 
+
+1. We recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
+2. Or you can run Projector(pytorch version):
 
 ​		Then run projector.
 
