@@ -172,6 +172,8 @@ onethousand@zju.edu.cn / [onethousand1250@gmail.com](mailto:onethousand1250@gmai
 
 You can **use, redistribute, and adapt this software for non-commercial purposes only**.
 
+**For business inquiries, please contact onethousand@zju.edu.cn / onethousand1250@gmail.com**
+
 If you use this code for your research, please cite our paper:
 
 ```
