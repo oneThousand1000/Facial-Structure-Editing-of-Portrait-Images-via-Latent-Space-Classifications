@@ -71,7 +71,7 @@ python align_images.py\
 
 For **aligned images** original image `{name}.jpg`  that placed in`$DATA_PATH$/origin`, the corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `$DATA_PATH$/code`. 
 
-We recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
+We recommend to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
 
 #### Run
 
