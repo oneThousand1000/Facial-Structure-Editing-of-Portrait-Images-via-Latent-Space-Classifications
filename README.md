@@ -26,7 +26,6 @@ Download the following pretrained models, put each of them to **PATH**:
 | [79999_iter.pth](https://drive.google.com/open?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812) | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
 | [Gs.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [vgg16.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
-| [vgg.pth](https://github.com/richzhang/PerceptualSimilarity/blob/master/models/weights/v0.1/vgg.pth?raw=true) | ./styleGAN2_model/pretrain                                   |
 | [shape_predictor_68_face_landmarks.dat.bz2](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2) | ./models                                                     |
 
 Please install dependencies by
@@ -72,20 +71,7 @@ python align_images.py\
 
 For **aligned images** original image `{name}.jpg`  that placed in`$DATA_PATH$/origin`, the corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `$DATA_PATH$/code`. 
 
-1. We recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
-2. Or you can run Projector(pytorch version):
-
-​		Then run projector.
-
-```python
-cd styleGAN2_model/stylegan2_pytorch
-python run_projector.py 
-    project_real_images\ 
-    --data_dir=$DATA_PATH$/origin\ 
-    --num_images=THE_NUMBER_OF_IMAGE_TO_PROJECT \
-    --network=../pretrain/Gs.pth\
-    --output=$DATA_PATH$/code
-```
+We recommend you use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
 
 #### Run
 

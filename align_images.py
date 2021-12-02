@@ -8,7 +8,6 @@ import os
 import sys
 import bz2
 import argparse
-from keras.utils import get_file
 from ffhq_dataset.face_alignment import image_align
 from ffhq_dataset.landmarks_detector import LandmarksDetector
 import multiprocessing
@@ -45,6 +44,9 @@ if __name__ == "__main__":
     landmarks_model_path = unpack_bz2('./models/shape_predictor_68_face_landmarks.dat.bz2')
     RAW_IMAGES_DIR = args.raw_dir
     ALIGNED_IMAGES_DIR = args.aligned_dir
+
+    if not os.path.exists(ALIGNED_IMAGES_DIR):
+        os.mkdir(ALIGNED_IMAGES_DIR)
 
     landmarks_detector = LandmarksDetector(landmarks_model_path)
     for img_name in os.listdir(RAW_IMAGES_DIR):
