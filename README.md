@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 ## How to Use
 
-### separation boundaries
+### Pre-trained separation boundaries
 
 Pre-trained separation boundaries can be found at [./interface/boundaries](https://github.com/oneThousand1000/CHINGER-Removing-Double-Chin-from-Portraits/tree/main/interface/boundaries):
 
@@ -92,21 +92,21 @@ For diffuse method (both coarse separation boundaries and  fine separation bound
 
 ```python
 python main_diffuse.py\
---data_dir $DATA_PATH$\
---boundary_path ./interface/boundaries/fine/all\
---boundary_init_ratio -4.0\
---boundary_additional_ratio -1.0\
---latent_space_type WP
+    --data_dir $DATA_PATH$\
+    --boundary_path ./interface/boundaries/fine/all\
+    --boundary_init_ratio -4.0\
+    --boundary_additional_ratio -1.0\
+    --latent_space_type WP
 ```
 
 For warp method (need fine separation boundaries):
 
 ```python
 python main_warp.py\
---data_dir $DATA_PATH$\
---boundary_path ./interface/boundaries/fine/all\
---boundary_init_ratio -4.0\
---latent_space_type WP
+    --data_dir $DATA_PATH$\
+    --boundary_path ./interface/boundaries/fine/all\
+    --boundary_init_ratio -4.0\
+    --latent_space_type WP
 ```
 
 ### Training
@@ -160,13 +160,9 @@ python remove_double_chin_step2.py\
 	--data_dir $TRAINING_DIR$
 ```
 
-the `data_dir` should be the same as `output_dir` that you input in remove_double_chin_step1.py
+The `data_dir` should be the same as `output_dir` that you input in remove_double_chin_step1.py, results of diffusion will be saved in  `data_dir`.
 
-<figure class="half">     <img src="docs/001645_diffuse.jpg"gif  width="300"> </figure>
-
-the results of diffusion will be saved in  `data_dir` 
-
-3.After diffuse, you can use the results of diffuse to **train a fine boundary**:
+After diffuse, you can use the results of diffuse to **train a fine boundary**:
 
 ```python
 python train_fine_boundary.py\
@@ -175,9 +171,7 @@ python train_fine_boundary.py\
 --split_ratio 0.9 \
 ```
 
-the fine boundary has better performance in preserving face identity.
-
-the comparison between  fine boundary(right) and coarse boundary(middle):
+The comparison between fine boundary(right) and coarse boundary(middle):
 
 ![fine_boundary2](./docs/fine_boundary2.jpg)
 
@@ -185,9 +179,11 @@ the comparison between  fine boundary(right) and coarse boundary(middle):
 
 ## Contact
 
-onethousand@zju.edu.cn
+onethousand@zju.edu.cn / [onethousand1250@gmail.com](mailto:onethousand1250@gmail.com)
 
-## Citation
+## License and Citation
+
+You can **use, redistribute, and adapt this software for non-commercial purposes only**.
 
 If you use this code for your research, please cite our paper:
 
