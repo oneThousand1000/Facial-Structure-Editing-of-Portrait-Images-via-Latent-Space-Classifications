@@ -1,3 +1,9 @@
+'''
+
+https://github.com/pbaylies/stylegan-encoder/blob/master/align_images.py
+
+'''
+
 import os
 import sys
 import bz2
@@ -24,8 +30,8 @@ if __name__ == "__main__":
     python align_images.py /raw_images /aligned_images
     """
     parser = argparse.ArgumentParser(description='Align faces from input images', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--raw_dir',  default='./test_res/raw',help='Directory with raw images for face alignment')
-    parser.add_argument('--aligned_dir',default='./test_res/aligned', help='Directory for storing aligned images')
+    parser.add_argument('raw_dir', help='Directory with raw images for face alignment')
+    parser.add_argument('aligned_dir', help='Directory for storing aligned images')
     parser.add_argument('--output_size', default=1024, help='The dimension of images for input to the model', type=int)
     parser.add_argument('--x_scale', default=1, help='Scaling factor for x dimension', type=float)
     parser.add_argument('--y_scale', default=1, help='Scaling factor for y dimension', type=float)
