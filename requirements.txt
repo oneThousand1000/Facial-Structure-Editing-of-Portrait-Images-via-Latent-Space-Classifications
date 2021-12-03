@@ -2,11 +2,8 @@ numpy==1.16.0
 torch==1.2.0
 torchvision==0.4.0
 face-alignment==1.1.0
-opencv-contrib-python==4.3.0.36
-opencv-python==4.3.0.36
 Pillow==5.4.1
-tensorflow-gpu==1.14.0
-requests==2.26.0
 scipy==1.2.1
 sklearn==0.0
 dlib==19.16.0
+pyyaml==5.4.1

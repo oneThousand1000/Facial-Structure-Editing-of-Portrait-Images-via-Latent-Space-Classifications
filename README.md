@@ -1,5 +1,7 @@
 # Coarse-to-Fine: Facial Structure Editing of Portrait Images via Latent Space Classifications
 
+![teaser](./docs/teaser.jpg)
+
 Published in *ACM Transactions on Graphics (Proc. of Siggraph 2021), 40(4): Article 46.*, 2021
 
 [Yiqian Wu](https://onethousandwu.com/), [Yongliang Yang](https://www.yongliangyang.net/), Qinjie Xiao, [Xiaogang Jin](http://www.cad.zju.edu.cn/home/jin/).
@@ -9,6 +11,12 @@ Published in *ACM Transactions on Graphics (Proc. of Siggraph 2021), 40(4): Arti
 **Abstract:**
 
 Facial structure editing of portrait images is challenging given the facial variety, the lack of ground-truth, the necessity of jointly adjusting color and shape, and the requirement of no visual artifacts. In this paper, we investigate how to perform chin editing as a case study of editing facial structures. We present a novel method that can automatically remove the double chin effect in portrait images. Our core idea is to train a fine classification boundary in the latent space of the portrait images. This can be used to edit the chin appearance by manipulating the latent code of the input portrait image while preserving the original portrait features. To achieve such a fine separation boundary, we employ a carefully designed training stage based on latent codes of paired synthetic images with and without a double chin. In the testing stage, our method can automatically handle portrait images with only a refinement to subtle misalignment before and after double chin editing. Our model enables alteration to the neck region of the input portrait image while keeping other regions unchanged, and guarantees the rationality of neck structure and the consistency of facial characteristics. To the best of our knowledge, this presents the first effort towards an effective application for editing double chins. We validate the efficacy and efficiency of our approach through extensive experiments and user studies.
+
+## License
+
+<u>**You can use, redistribute, and adapt this software for NON-COMMERCIAL purposes only**.</u>
+
+**For business inquiries, please contact onethousand@zju.edu.cn / onethousand1250@gmail.com / jin@cad.zju.edu.cn**
 
 ## Requirements
 
@@ -20,7 +28,7 @@ Facial structure editing of portrait images is challenging given the facial vari
 
 Download the following pretrained models, put each of them to **PATH**:
 
-|                                                              | PATH                                                         |
+| model                                                        | PATH                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [classification_model.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./classifier/double_chin_classification                      |
 | [79999_iter.pth](https://drive.google.com/open?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812) | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
@@ -35,6 +43,8 @@ conda create -n Coarse2Fine python=3.6
 activate Coarse2Fine
 pip install -r requirements.txt
 ```
+
+(If the torch and  torchvision packages are not available from your current channels, download torch-1.2.0-cp36-cp36m-win_amd64.whl and torchvision-0.4.0-cp36-cp36m-win_amd64.whl from [this website](https://download.pytorch.org/whl/torch_stable.html))
 
 ## How to Use
 
@@ -59,42 +69,35 @@ Notice that **psi-0.5** dataset and **psi-0.8** dataset is images and latent cod
 
 #### data prepare :
 
-<u>For **real images**</u>, first find the matching latent vectors.
+For<u> **real images**</u>, first find the matching latent vectors.
 
-First, [Align faces from input images](https://github.com/pbaylies/stylegan-encoder/blob/master/align_images.py) and save aligned images to $DATA_PATH$/origin.
+First, [align faces from input images](https://github.com/pbaylies/stylegan-encoder/blob/master/align_images.py) and save aligned images `{name}.jpg`  to DATA_PATH/origin.
 
 ```python
-python align_images.py\
-	--raw_dir $DATA_PATH$/raw\
-    --aligned_dir $DATA_PATH$/origin
+python align_images.py --raw_dir DATA_PATH/raw  --aligned_dir DATA_PATH/origin
 ```
 
-For **aligned images** original image `{name}.jpg`  that placed in`$DATA_PATH$/origin`, the corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `$DATA_PATH$/code`. 
+Second, we recommend to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly run the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2).  The corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `DATA_PATH/code`. 
 
-We recommend to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly use the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2). 
+**Please find the examplar data in `./test`**
 
 #### Run
 
-For diffuse method (both coarse separation boundaries and  fine separation boundaries work):
+For diffuse method:
 
 ```python
-python main_diffuse.py\
-    --data_dir $DATA_PATH$\
-    --boundary_path ./interface/boundaries/fine/all\
-    --boundary_init_ratio -4.0\
-    --boundary_additional_ratio -1.0\
-    --latent_space_type WP
+python main_diffuse.py --data_dir DATA_PATH  --boundary_path ./interface/boundaries/fine/all --boundary_init_ratio -4.0 --boundary_additional_ratio -1.0 --latent_space_type WP
 ```
 
-For warp method (need fine separation boundaries):
+The resulting images will be saved in DATA_PATH/diffuse_res, the resulting latent code will be saved in DATA_PATH/diffuse_code
+
+For warp method:
 
 ```python
-python main_warp.py\
-    --data_dir $DATA_PATH$\
-    --boundary_path ./interface/boundaries/fine/all\
-    --boundary_init_ratio -4.0\
-    --latent_space_type WP
+python main_warp.py --data_dir DATA_PATH --boundary_path ./interface/boundaries/fine/all --boundary_init_ratio -4.0 --latent_space_type WP
 ```
+
+The resulting images will be saved in DATA_PATH/warp_res.
 
 ### Training
 
@@ -103,60 +106,40 @@ python main_warp.py\
 1. Data generation:
 
    ```python
-   python generate_data_and_score.py\
-   --output_dir $PATH_TO_DATASET$\
-   --num 50000\
-   --truncation_psi 0.8\
+   python generate_data_and_score.py --output_dir DATASET_PATH --num DATASET_SIZE --truncation_psi 0.8
    ```
-
-
-If you want to generate data from your own latent codes, please set `--latent_codes_path`  as `PATH_TO_LATENT_CODE`, else the latent codes will be randomly generated.
-
-If you only want to generate images that have double chin ,set `--double_chin_only`
 
 ​	2.Coarse boundary training:
 
 ```python
-python train_coarse_boundary.py\
---output_dir PATH_TO_SAVE_BOUNDARY\
---latent_codes_path $PATH_TO_DATASET$/w.npy \
---scores_path $PATH_TO_DATASET$/double_chin_scores.npy\
---chosen_num_or_ratio 0.1\
---split_ratio 0.9 \
+python train_coarse_boundary.py --output_dir COARSE_BOUNDARY_DIR --latent_codes_path DATASET_PATH/w.npy  --scores_path DATASET_PATH/double_chin_scores.npy --chosen_num_or_ratio 0.1 --split_ratio 0.9 
 ```
 
-The boundary will be saved in `PATH_TO_SAVE_BOUNDARY`
+The coarse separation boundary will be saved in `COARSE_BOUNDARY_DIR`
 
 #### fine separation boundary training
 
-First, prepare the data for diffusion
-
-**using coarse boundary to prepare data**
+First, **prepare the data for diffusion**:
 
 ```python
-python remove_double_chin_step1.py\
-    --output_dir $TRAINING_DIR$\
-    --boundary_path PATH_TO_LOAD_BOUNDARY\   
-    --input_data_dir $PATH_TO_DATASET$
+python remove_double_chin_step1.py  --output_dir TRAINING_DIR --boundary_path COARSE_BOUNDARY_DIR  --input_data_dir DATASET_PATH
 ```
 
 Then **diffuse the prepared data**:
 
 ```python
-python remove_double_chin_step2.py\
-	--data_dir $TRAINING_DIR$
+python remove_double_chin_step2.py --data_dir TRAINING_DIR
 ```
 
 The `data_dir` should be the same as `output_dir` that you input in remove_double_chin_step1.py, results of diffusion will be saved in  `data_dir`.
 
-After diffuse, you can use the results of diffuse to **train a fine boundary**:
+After diffuse, you can use the results of diffuse to **train the fine separation boundary**:
 
 ```python
-python train_fine_boundary.py\
---output_dir PATH_TO_SAVE_BOUNDARY\
---latent_codes_path $TRAINING_DIR$/codes\
---split_ratio 0.9 \
+python train_fine_boundary.py --output_dir FINE_BOUNDARY_DIR --latent_codes_path TRAINING_DIR/codes --split_ratio 0.9
 ```
+
+The coarse separation boundary will be saved in `FINE_BOUNDARY_DIR`
 
 The comparison between fine boundary(right) and coarse boundary(middle):
 
@@ -168,11 +151,11 @@ The comparison between fine boundary(right) and coarse boundary(middle):
 
 onethousand@zju.edu.cn / [onethousand1250@gmail.com](mailto:onethousand1250@gmail.com)
 
-## License and Citation
+## Citation
 
-You can **use, redistribute, and adapt this software for non-commercial purposes only**.
+<u>You can **use, redistribute, and adapt this software for NON-COMMERCIAL purposes only**.</u>
 
-**For business inquiries, please contact onethousand@zju.edu.cn / onethousand1250@gmail.com**
+**For business inquiries, please contact onethousand@zju.edu.cn / onethousand1250@gmail.com / jin@cad.zju.edu.cn**
 
 If you use this code for your research, please cite our paper:
 
