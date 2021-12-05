@@ -22,7 +22,7 @@ Facial structure editing of portrait images is challenging given the facial vari
 
 1. Windows 
 2. Python 3.6
-3. NVIDIA GPU + CUDA10.0 + CuDNN
+3. NVIDIA GPU + CUDA10.0 + CuDNN (also tested in  CUDA10.1)
 
 ## Installation
 
@@ -30,10 +30,10 @@ Download the following pretrained models, put each of them to **PATH**:
 
 | model                                                        | PATH                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [classification_model.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./classifier/double_chin_classification                      |
-| [79999_iter.pth](https://drive.google.com/open?id=154JgKpzCPW82qINcVieuPH3fZ2e0P812) | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
-| [Gs.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
-| [vgg16.pth](https://drive.google.com/drive/folders/1SQlYvN12JWPsPqXb-QKP7TgOzeGUax6R?usp=sharing) | ./styleGAN2_model/pretrain                                   |
+| [classification_model.pth](https://drive.google.com/file/d/1qztscqTs_6caoSQQ6I9E2h20_SwZhRFo/view?usp=sharing) | ./classifier/double_chin_classification                      |
+| [79999_iter.pth](https://drive.google.com/file/d/1eP90uPItdAy1czivugAM3ZK68OdY2pfe/view?usp=sharing) | ./classifier/src/feature_extractor/face_parsing_PyTorch/res/cp |
+| [Gs.pth](https://drive.google.com/file/d/1ftka1OI8pvMmml6Qz4Mu4reqH_5h94Mx/view?usp=sharing) | ./styleGAN2_model/pretrain                                   |
+| [vgg16.pth](https://drive.google.com/file/d/1V8r8WqDp5vHvE6ooV70h1n7KomF8AbER/view?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [shape_predictor_68_face_landmarks.dat.bz2](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2) | ./models                                                     |
 
 Please install dependencies by
