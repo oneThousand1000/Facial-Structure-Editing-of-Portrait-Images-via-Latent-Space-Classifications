@@ -26,7 +26,7 @@ Facial structure editing of portrait images is challenging given the facial vari
 
 ## Installation
 
-Download the following pretrained models, put each of them to **PATH**:
+1. Download the following pretrained models, put each of them to **PATH**:
 
 | model                                                        | PATH                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -36,15 +36,18 @@ Download the following pretrained models, put each of them to **PATH**:
 | [vgg16.pth](https://drive.google.com/file/d/1V8r8WqDp5vHvE6ooV70h1n7KomF8AbER/view?usp=sharing) | ./styleGAN2_model/pretrain                                   |
 | [shape_predictor_68_face_landmarks.dat.bz2](http://dlib.net/files/shape_predictor_68_face_landmarks.dat.bz2) | ./models                                                     |
 
-Please install dependencies by
+2. Create conda environment:
 
 ```python
 conda create -n Coarse2Fine python=3.6
 activate Coarse2Fine
-pip install -r requirements.txt
 ```
 
-(If the torch and  torchvision packages are not available from your current channels, you can download from [this website](https://download.pytorch.org/whl/torch_stable.html))
+3. Then install other dependencies by
+
+```
+pip install -r requirements.txt
+```
 
 ## How to Use
 
@@ -88,15 +91,15 @@ The corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` shoul
 For diffuse method:
 
 ```python
-python main_diffuse.py --data_dir DATA_PATH  --boundary_path ./interface/boundaries/fine/all --alpha -4.0 --latent_space_type WP
+python main_diffuse.py --data_dir DATA_PATH  --boundary_path ./interface/boundaries/fine/all --alpha -5.0 --latent_space_type WP
 ```
 
-The resulting images will be saved in DATA_PATH/diffuse_res, the resulting latent code will be saved in DATA_PATH/diffuse_code
+The resulting images will be saved in DATA_PATH/diffuse_res, the resulting latent codes will be saved in DATA_PATH/diffuse_code
 
 For warp method:
 
 ```python
-python main_warp.py --data_dir DATA_PATH --boundary_path ./interface/boundaries/fine/all --alpha -4.0 --latent_space_type WP
+python main_warp.py --data_dir DATA_PATH --boundary_path ./interface/boundaries/fine/all --alpha -5.0 --latent_space_type WP
 ```
 
 The resulting images will be saved in DATA_PATH/warp_res.
@@ -110,6 +113,7 @@ The resulting images will be saved in DATA_PATH/warp_res.
    ```python
    python generate_data_and_score.py --output_dir DATASET_PATH --num DATASET_SIZE --truncation_psi 0.8
    ```
+   
 
 ​	2.Coarse separation boundary training:
 
@@ -117,25 +121,26 @@ The resulting images will be saved in DATA_PATH/warp_res.
 python train_coarse_boundary.py --output_dir COARSE_BOUNDARY_DIR --latent_codes_path DATASET_PATH/w.npy  --scores_path DATASET_PATH/double_chin_scores.npy --chosen_num_or_ratio 0.1 --split_ratio 0.9 
 ```
 
-The coarse separation boundary will be saved in `COARSE_BOUNDARY_DIR`
+The coarse separation boundary will be saved in `COARSE_BOUNDARY_DIR`.
+
+You can also use the pretrained  coarse separation boundary in `./interface/boundaries/coarse/psi_0.8/stylegan2_ffhq_double_chin_w`
 
 #### fine separation boundary training
 
-First, **prepare data for diffusion**:
+1. First, **prepare data for diffusion**:
 
 ```python
 python remove_double_chin_step1.py  --output_dir TRAINING_DIR --boundary_path COARSE_BOUNDARY_DIR  --input_data_dir DATASET_PATH
 ```
-
-Then **diffuse the prepared data**:
+2. Then **diffuse the prepared data**:
 
 ```python
 python remove_double_chin_step2.py --data_dir TRAINING_DIR
 ```
 
-Results of diffusion will be saved in  `data_dir`.
+Resulting images of diffusion will be saved in  `TRAINING_DIR/diffused`, resulting latent codes will be saved in  `TRAINING_DIR/codes`.
 
-After diffuse, you can use the results of diffuse to **train the fine separation boundary**:
+3. After diffuse, you can use the results of diffuse to **train the fine separation boundary**:
 
 ```python
 python train_fine_boundary.py --output_dir FINE_BOUNDARY_DIR --latent_codes_path TRAINING_DIR/codes --split_ratio 0.9
