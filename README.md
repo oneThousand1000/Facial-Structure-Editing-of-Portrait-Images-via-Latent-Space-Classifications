@@ -44,7 +44,7 @@ activate Coarse2Fine
 pip install -r requirements.txt
 ```
 
-(If the torch and  torchvision packages are not available from your current channels, download torch-1.2.0-cp36-cp36m-win_amd64.whl and torchvision-0.4.0-cp36-cp36m-win_amd64.whl from [this website](https://download.pytorch.org/whl/torch_stable.html))
+(If the torch and  torchvision packages are not available from your current channels, you can download from [this website](https://download.pytorch.org/whl/torch_stable.html))
 
 ## How to Use
 
@@ -77,7 +77,9 @@ First, [align faces from input images](https://github.com/pbaylies/stylegan-enco
 python align_images.py --raw_dir DATA_PATH/raw  --aligned_dir DATA_PATH/origin
 ```
 
-Second, we recommend to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly run the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2).  The corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `DATA_PATH/code`. 
+Second, we recommend to use the projector of official **[ stylegan2 ](https://github.com/NVlabs/stylegan2)** to obtain the latent codes of real images, to correctly run the StyleGAN2 [projector](https://github.com/NVlabs/stylegan2/blob/master/run_projector.py), please follow the **Requirements** in [ stylegan2 ](https://github.com/NVlabs/stylegan2).  
+
+The corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` should be placed in `DATA_PATH/code`. 
 
 **Please find the examplar data in `./test`**
 
@@ -109,7 +111,7 @@ The resulting images will be saved in DATA_PATH/warp_res.
    python generate_data_and_score.py --output_dir DATASET_PATH --num DATASET_SIZE --truncation_psi 0.8
    ```
 
-​	2.Coarse boundary training:
+​	2.Coarse separation boundary training:
 
 ```python
 python train_coarse_boundary.py --output_dir COARSE_BOUNDARY_DIR --latent_codes_path DATASET_PATH/w.npy  --scores_path DATASET_PATH/double_chin_scores.npy --chosen_num_or_ratio 0.1 --split_ratio 0.9 
@@ -119,7 +121,7 @@ The coarse separation boundary will be saved in `COARSE_BOUNDARY_DIR`
 
 #### fine separation boundary training
 
-First, **prepare the data for diffusion**:
+First, **prepare data for diffusion**:
 
 ```python
 python remove_double_chin_step1.py  --output_dir TRAINING_DIR --boundary_path COARSE_BOUNDARY_DIR  --input_data_dir DATASET_PATH
@@ -131,7 +133,7 @@ Then **diffuse the prepared data**:
 python remove_double_chin_step2.py --data_dir TRAINING_DIR
 ```
 
-The `data_dir` should be the same as `output_dir` that you input in remove_double_chin_step1.py, results of diffusion will be saved in  `data_dir`.
+Results of diffusion will be saved in  `data_dir`.
 
 After diffuse, you can use the results of diffuse to **train the fine separation boundary**:
 
@@ -141,23 +143,13 @@ python train_fine_boundary.py --output_dir FINE_BOUNDARY_DIR --latent_codes_path
 
 The coarse separation boundary will be saved in `FINE_BOUNDARY_DIR`
 
-The comparison between fine boundary(right) and coarse boundary(middle):
-
-![fine_boundary2](./docs/fine_boundary2.jpg)
-
-
-
 ## Contact
 
 onethousand@zju.edu.cn / [onethousand1250@gmail.com](mailto:onethousand1250@gmail.com)
 
 ## Citation
 
-<u>You can **use, redistribute, and adapt this software for NON-COMMERCIAL purposes only**.</u>
-
-**For business inquiries, please contact onethousand@zju.edu.cn / onethousand1250@gmail.com / jin@cad.zju.edu.cn**
-
-If you use this code for your research, please cite our paper:
+**If you use this code for your research, please cite our paper:**
 
 ```
 @article{DBLP:journals/tog/WuYX021,
