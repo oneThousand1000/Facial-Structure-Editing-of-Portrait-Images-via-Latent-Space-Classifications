@@ -183,7 +183,7 @@ We thanks the following works:
 
 [idinvert](https://github.com/genforce/idinvert)
 
-[MaskGAN](https://github.com/switchablenorms/CelebAMask-HQ)
+[CelebAMask-HQ](https://github.com/switchablenorms/CelebAMask-HQ)
 
 ```
 @inproceedings{zhu2020indomain,
