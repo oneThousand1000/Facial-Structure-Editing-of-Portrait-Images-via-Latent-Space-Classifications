@@ -53,10 +53,6 @@ def warp_img(img1,img2,net,debug=False):
     neck_mask1[:chin_point,:,:]=0
     neck_mask2[:chin_point, :, :]=0
 
-    # cv2.imshow('i', img1*face_mask1/255)
-    # cv2.waitKey(0)
-    # cv2.imshow('i', img1 * neck_mask1/255)
-    # cv2.waitKey(0)
 
 
     face_points1_left,face_points1_right,face_points2_left,face_points2_right= get_point(mask1=face_mask1,mask2=face_mask2,point_pair_num=point_pair_num)
@@ -79,18 +75,11 @@ def warp_img(img1,img2,net,debug=False):
         for i  in range(points1.shape[0]):
             cv2.putText(can1, str(i), (points1[i][0], points1[i][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 5)
             cv2.circle(can1, (points1[i][0], points1[i][1]), radius=25, color=(255, 0, 0))
-        # cv2.imshow('i', cv2.resize(can1, (512, 512)))
-        # cv2.waitKey(0)
+
         can2 = img2.copy()
         for i  in range(points2.shape[0]):
             cv2.putText(can2, str(i), (points2[i][0], points2[i][1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 5)
             cv2.circle(can2, (points2[i][0], points2[i][1]), radius=25, color=(255, 0, 0))
-        # cv2.imshow('i', cv2.resize(can2, (512, 512)))
-        # cv2.waitKey(0)
-
-
-
-
 
 
     if debug:

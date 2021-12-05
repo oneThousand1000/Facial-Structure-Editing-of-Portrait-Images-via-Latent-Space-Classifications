@@ -88,7 +88,7 @@ The corresponding **latent code** (in WP(W+) latent space) `{name}_wp.npy` shoul
 For diffuse method:
 
 ```python
-python main_diffuse.py --data_dir DATA_PATH  --boundary_path ./interface/boundaries/fine/all --boundary_init_ratio -4.0 --boundary_additional_ratio -1.0 --latent_space_type WP
+python main_diffuse.py --data_dir DATA_PATH  --boundary_path ./interface/boundaries/fine/all --boundary_init -4.0 --boundary_add -1.0 --latent_space_type WP
 ```
 
 The resulting images will be saved in DATA_PATH/diffuse_res, the resulting latent code will be saved in DATA_PATH/diffuse_code

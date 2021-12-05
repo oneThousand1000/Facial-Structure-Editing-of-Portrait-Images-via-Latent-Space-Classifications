@@ -250,9 +250,6 @@ class StyleGAN2Inverter(object):
                                  f'But {latent_codes_shape} received!')
         init_z = torch.Tensor(init_code).to(self.run_device)
 
-        # if latent_space_type == 'wp' or latent_space_type == 'WP':
-        #     init_z=self.G.dlatent_processor(latent_codes=init_z,
-        #                       latent_space_type='w')
 
 
         z =init_z.to(self.run_device)
@@ -260,7 +257,6 @@ class StyleGAN2Inverter(object):
 
         optimizer = torch.optim.Adam([z], lr=self.learning_rate)
 
-        #pbar = tqdm(range(1, self.iteration + 1), leave=True,ncols=130)
         for step in range(1, self.iteration + 1):
             loss = 0.0
 
@@ -278,23 +274,15 @@ class StyleGAN2Inverter(object):
 
             # Perceptual loss.
             if self.loss_feat_weight:
-                #print(self.face_pool(x).size())
                 x_feat = self.F.net(self.face_pool(x))
                 x_rec_feat = self.F.net(self.face_pool(x_rec))
                 loss_feat = torch.mean((x_feat - x_rec_feat) ** 2, dim=[1, 2, 3])
                 loss = loss + loss_feat * self.loss_feat_weight
                 log_message += f', loss_feat: {np.mean(_get_tensor_value(loss_feat * self.loss_feat_weight)):.3f}'
-            # if self.loss_smoothness:
-            #     loss_smooth = F.smooth_l1_loss(x , x_rec , size_average=False)
-            #     loss = loss + loss_smooth * self.loss_smoothness
-            #     log_message += f', loss_smooth: {np.mean(_get_tensor_value(loss_smooth * self.loss_smoothness)):.3f}'
+
 
             log_message += f', loss: {np.mean(_get_tensor_value(loss)):.3f}'
-            #pbar.set_description_str(log_message)
-            # if self.logger:
-            #     self.logger.debug(f'Step: {step:05d}, '
-            #                       f'lr: {self.learning_rate:.2e}, '
-            #                       f'{log_message}')
+
             print('\r',f'step{step}/{self.iteration }, '+log_message,end='', flush=(step>1))
             # Do optimization.
             optimizer.zero_grad()

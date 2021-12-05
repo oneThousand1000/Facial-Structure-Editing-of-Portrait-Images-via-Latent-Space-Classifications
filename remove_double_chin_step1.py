@@ -17,7 +17,7 @@ def parse_args():
                         help='Path to the semantic boundary. (required)')
     parser.add_argument('-i', '--input_data_dir', type=str,required=True,
                         help='load latent codes ')
-    parser.add_argument('--ratio', type=float, default=-4.0,
+    parser.add_argument('--alpha', type=float, default=-4.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
     parser.add_argument('-s', '--latent_space_type', type=str, default='wp',
@@ -84,7 +84,7 @@ def run():
     image_name = ['w_doublechin', 'wo_doublechin']
     for sample_id in tqdm(range(total_num), leave=False):
         latent=latent_codes[sample_id:sample_id + 1]
-        interpolations=np.concatenate([latent,latent+boundary*args.ratio],axis=0)
+        interpolations=np.concatenate([latent,latent+boundary*args.alpha],axis=0)
 
         interpolation_id = 0
         image_pair=[]

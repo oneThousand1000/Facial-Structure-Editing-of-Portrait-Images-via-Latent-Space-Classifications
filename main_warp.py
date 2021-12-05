@@ -29,7 +29,7 @@ def parse_args():
                         help='Path to the semantic boundary. (required)')
 
 
-    parser.add_argument('--boundary_init_ratio', type=float, default=-5.0,
+    parser.add_argument('--alpha', type=float, default=-5.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
 
@@ -52,7 +52,6 @@ def diffuse(init_code, target, mask, inverter):
                                                   init_code=init_code,
                                                   mask=mask,
                                                   **kwargs)
-
     viz_result = viz_result[:, :, ::-1]
     return viz_result
 
@@ -107,7 +106,7 @@ def run():
 
         wps_latent = np.reshape(np.load(latent_codes[img_index]), (1, 18, 512))
         origin_img = cv2.imread(origin_img_list[img_index])
-        distance = args.boundary_init_ratio
+        distance = args.alpha
 
 
         edited_wps_latent = wps_latent + distance * boundary
@@ -121,14 +120,7 @@ def run():
 
         mask = get_neck_blur_mask(img_path=origin_img, net=neckMaskNet, dilate=5)
 
-        debug = True
-        if debug:
-            warpped_edited_img, debug_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=True)
-        else:
-            warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
-
-
-
+        warpped_edited_img = warp_img(origin_img, edited_img, net=neckMaskNet, debug=False)
 
 
         res = warpped_edited_img * (mask / 255) + origin_img * (1 - mask / 255)

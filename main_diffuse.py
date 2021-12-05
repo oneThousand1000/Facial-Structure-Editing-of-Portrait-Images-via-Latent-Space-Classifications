@@ -4,14 +4,10 @@ import cv2
 import numpy as np
 from styleGAN2_model.stylegan2_generator import StyleGAN2Generator
 from classifier.src.feature_extractor.neck_mask_extractor import get_neck_mask, get_parsingNet
-from classifier.classify import get_model, check_double_chin
-
-#from interface.utils.myinverter import StyleGAN2Inverter
 from CHINGER_inverter import StyleGAN2Inverter
 import glob
 import time
 
-from utils import str2bool
 '''
 Data prepare:
 For real images process, you should input `--data_dir PATH`,
@@ -33,12 +29,10 @@ def parse_args():
                         required=True,
                         help='Path to the semantic boundary. (required)')
 
-    parser.add_argument('--boundary_init_ratio', type=float, default=-4.0,
+    parser.add_argument('--alpha', type=float, default=-4.0,
                         help='End point for manipulation in latent space. '
                              '(default: 3.0)')
-    parser.add_argument('--boundary_additional_ratio', type=float, default=-1.0,
-                        help='End point for manipulation in latent space. '
-                             '(default: 3.0)')
+
     parser.add_argument('-s', '--latent_space_type', type=str, default='wp',
                         choices=['z', 'Z', 'w', 'W', 'wp', 'wP', 'Wp', 'WP'],
                         help='Latent space used in Style GAN. (default: `Z`)')
@@ -52,12 +46,7 @@ def parse_args():
                         help='The perceptual loss scale for optimization. '
                              '(default: 5e-5)')
 
-    parser.add_argument('--gpu_id', type=str, default='0',
-                        help='Which GPU(s) to use. (default: `0`)')
 
-    parser.add_argument("--cycle", type=str2bool, nargs='?',
-                        const=False, default=False,
-                        help="diffuse until no double chin.")
 
     return parser.parse_args()
 
@@ -116,11 +105,9 @@ def run():
     print(f'Processing {total_num} samples.')
 
     neckMaskNet = get_parsingNet()
-    double_chin_checker = get_model()
 
     times = []
     for img_index in range(total_num):
-        score = 1
         image_name = os.path.splitext(os.path.basename(origin_img_list[img_index]))[0]
 
         if os.path.exists(os.path.join(code_dir, f'{image_name}_inverted_wp.npy')):
@@ -136,46 +123,33 @@ def run():
         mask_dilate_blur = cv2.blur(mask_dilate, ksize=(35, 35))
         mask_dilate_blur = neck_mask + (255 - neck_mask) // 255 * mask_dilate_blur
         train_count = 0
-        ratio = args.boundary_init_ratio
-        while (score):
-            train_count += 1
-            edited_wps_latent = wps_latent + ratio * boundary
+        
+        
+        edited_wps_latent = wps_latent + args.alpha * boundary
 
-            edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
-                                                    style_range=range(7, 18),
-                                                    style_codes=wps_latent,
-                                                    mix_ratio=1.0, **kwargs)
-            edited_img = edited_output['image'][0][:, :, ::-1]
+        edited_output = model.easy_style_mixing(latent_codes=edited_wps_latent,
+                                                style_range=range(7, 18),
+                                                style_codes=wps_latent,
+                                                mix_ratio=1.0, **kwargs)
+        edited_img = edited_output['image'][0][:, :, ::-1]
 
-            synthesis_image = origin_img * (1 - neck_mask // 255) + \
-                              edited_img * (neck_mask // 255)
-            init_code = wps_latent
+        synthesis_image = origin_img * (1 - neck_mask // 255) + \
+                          edited_img * (neck_mask // 255)
+        init_code = wps_latent
 
-            target_image = synthesis_image[:, :, ::-1]
+        target_image = synthesis_image[:, :, ::-1]
 
-            start_diffuse = time.clock()
-            code, viz_result = inverter.easy_mask_diffuse(target=target_image,
-                                                          init_code=init_code,
-                                                          mask=mask_dilate_blur,
-                                                          **kwargs)
+        start_diffuse = time.clock()
+        code, viz_result = inverter.easy_mask_diffuse(target=target_image,
+                                                      init_code=init_code,
+                                                      mask=mask_dilate_blur,
+                                                      **kwargs)
 
-            time_diffuse = (time.clock() - start_diffuse)
+        time_diffuse = (time.clock() - start_diffuse)
 
-            times.append(time_diffuse)
-            viz_result = viz_result[:, :, ::-1]
-            res = origin_img * (1 - mask_dilate_blur / 255) + viz_result * (mask_dilate_blur / 255)
-            score = check_double_chin(img=res, model=double_chin_checker)
-            if score:
-                print('\n still exists double chin! continue....')
-            else:
-                print('\n double chin is removed')
-
-            wps_latent = code
-            ratio += args.boundary_additional_ratio
-
-            if not args.cycle or train_count >= 5:
-                break
-
+        times.append(time_diffuse)
+        viz_result = viz_result[:, :, ::-1]
+        res = origin_img * (1 - mask_dilate_blur / 255) + viz_result * (mask_dilate_blur / 255)
 
         print('train %d times.' % train_count)
         np.save(os.path.join(diffuse_code_dir, f'{image_name}_inverted_wp.npy'), code)
