@@ -6,7 +6,7 @@ Published in *ACM Transactions on Graphics (Proc. of Siggraph 2021), 40(4): Arti
 
 [Yiqian Wu](https://onethousandwu.com/), [Yongliang Yang](https://www.yongliangyang.net/), Qinjie Xiao, [Xiaogang Jin](http://www.cad.zju.edu.cn/home/jin/).
 
-[Paper](http://www.cad.zju.edu.cn/home/jin/sig2021/paper46.pdf)    [Video](http://www.cad.zju.edu.cn/home/jin/sig2021/demo.mp4)    [Project Page](http://www.cad.zju.edu.cn/home/jin/sig2021/sig2021.htm)
+[Paper](https://dl.acm.org/doi/10.1145/3450626.3459814)    [Video](https://studio.youtube.com/video/1aYPceNkwIQ/edit)    [Project Page](https://onethousandwu.com/doublechinremoval.github.io/)
 
 **Abstract:**
 
