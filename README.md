@@ -6,7 +6,17 @@ Published in *ACM Transactions on Graphics (Proc. of Siggraph 2021), 40(4): Arti
 
 [Yiqian Wu](https://onethousandwu.com/), [Yongliang Yang](https://www.yongliangyang.net/), Qinjie Xiao, [Xiaogang Jin](http://www.cad.zju.edu.cn/home/jin/).
 
-[Paper](https://dl.acm.org/doi/10.1145/3450626.3459814)    [Video](https://studio.youtube.com/video/1aYPceNkwIQ/edit)    [Project Page](https://onethousandwu.com/doublechinremoval.github.io/)
+<div align="center">
+
+[![Project](https://img.shields.io/badge/Doublechin%20Removal-1?label=Project&color=8B93FF)](https://onethousandwu.com/doublechinremoval.github.io/)
+[![Paper](https://img.shields.io/badge/Main%20Paper-1?color=58A399)](https://dl.acm.org/doi/10.1145/3450626.3459814)
+[![Suppl](https://img.shields.io/badge/Supplementary-1?color=378CE7)](https://drive.google.com/file/d/14oIdiv2NkvpRYxomDRq0AQEpBuL4pKtv/view?usp=sharing)
+[![Video](https://img.shields.io/badge/Video-1?color=FDA403)](https://youtu.be/1aYPceNkwIQ)
+[![Dataset](https://img.shields.io/badge/Dataset-1?color=FC819E)](https://github.com/oneThousand1000/coarse-to-fine-chin-editing)
+[![Github](https://img.shields.io/github/stars/oneThousand1000/Facial-Structure-Editing-of-Portrait-Images-via-Latent-Space-Classifications)](https://github.com/oneThousand1000/Facial-Structure-Editing-of-Portrait-Images-via-Latent-Space-Classifications)
+
+</div>
+
 
 **Abstract:**
 
